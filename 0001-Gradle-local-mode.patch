@@ -1,0 +1,88 @@
+From c3d41fbc30e73804753f26413e87c0a549cdf652 Mon Sep 17 00:00:00 2001
+From: Mikolaj Izdebski <mizdebsk@redhat.com>
+Date: Wed, 15 Oct 2014 14:23:30 +0200
+Subject: [PATCH 1/9] Gradle local mode
+
+---
+ build.gradle                                         | 1 +
+ buildSrc/build.gradle                                | 1 +
+ subprojects/docs/docs.gradle                         | 1 +
+ subprojects/docs/src/transforms/release-notes.gradle | 1 +
+ subprojects/performance/performance.gradle           | 1 +
+ subprojects/reporting/reporting.gradle               | 1 +
+ 6 files changed, 6 insertions(+)
+
+diff --git a/build.gradle b/build.gradle
+index 4b40e97..a6c4c03 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -127,6 +127,7 @@ allprojects {
+     group = 'org.gradle'
+ 
+     repositories {
++        xmvn()
+         maven { url 'https://repo.gradle.org/gradle/libs' }
+     }
+ }
+diff --git a/buildSrc/build.gradle b/buildSrc/build.gradle
+index 9e03b4f..138b851 100644
+--- a/buildSrc/build.gradle
++++ b/buildSrc/build.gradle
+@@ -21,6 +21,7 @@ apply plugin: 'idea'
+ apply plugin: 'eclipse'
+ 
+ repositories {
++    xmvn()
+     maven { url 'https://repo.gradle.org/gradle/libs' }
+     mavenCentral()
+ }
+diff --git a/subprojects/docs/docs.gradle b/subprojects/docs/docs.gradle
+index b0b6ab2..4985b3b 100755
+--- a/subprojects/docs/docs.gradle
++++ b/subprojects/docs/docs.gradle
+@@ -31,6 +31,7 @@ apply plugin: 'jsoup'
+ apply plugin: 'javascript-base'
+ 
+ repositories {
++    xmvn()
+     javaScript.googleApis()
+ 
+     ivy {
+diff --git a/subprojects/docs/src/transforms/release-notes.gradle b/subprojects/docs/src/transforms/release-notes.gradle
+index 627cd58..f1751c1 100644
+--- a/subprojects/docs/src/transforms/release-notes.gradle
++++ b/subprojects/docs/src/transforms/release-notes.gradle
+@@ -1,5 +1,6 @@
+ buildscript {
+     repositories {
++        xmvn()
+         mavenCentral()
+     }
+     dependencies {
+diff --git a/subprojects/performance/performance.gradle b/subprojects/performance/performance.gradle
+index 1945006..090013a 100644
+--- a/subprojects/performance/performance.gradle
++++ b/subprojects/performance/performance.gradle
+@@ -7,6 +7,7 @@ configurations {
+ }
+ 
+ repositories {
++    xmvn()
+     javaScript.googleApis()
+ }
+ 
+diff --git a/subprojects/reporting/reporting.gradle b/subprojects/reporting/reporting.gradle
+index ad0c7c2..87cbf3b 100644
+--- a/subprojects/reporting/reporting.gradle
++++ b/subprojects/reporting/reporting.gradle
+@@ -5,6 +5,7 @@ configurations {
+ }
+ 
+ repositories {
++    xmvn()
+     javaScript.googleApis()
+ }
+ 
+-- 
+1.9.3
+

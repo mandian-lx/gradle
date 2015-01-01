@@ -1,0 +1,76 @@
+From 9de91e7cecaafd4051e552578df58330d3828501 Mon Sep 17 00:00:00 2001
+From: Mikolaj Izdebski <mizdebsk@redhat.com>
+Date: Sun, 9 Nov 2014 17:52:30 +0100
+Subject: [PATCH 7/9] Remove Class-Path from manifest
+
+---
+ .../api/internal/classpath/DefaultModuleRegistry.java       | 13 +------------
+ subprojects/launcher/launcher.gradle                        |  7 -------
+ .../gradle/launcher/daemon/client/DefaultDaemonStarter.java |  4 +++-
+ 3 files changed, 4 insertions(+), 20 deletions(-)
+
+diff --git a/subprojects/core/src/main/groovy/org/gradle/api/internal/classpath/DefaultModuleRegistry.java b/subprojects/core/src/main/groovy/org/gradle/api/internal/classpath/DefaultModuleRegistry.java
+index 9edcde8..9edbf6b 100644
+--- a/subprojects/core/src/main/groovy/org/gradle/api/internal/classpath/DefaultModuleRegistry.java
++++ b/subprojects/core/src/main/groovy/org/gradle/api/internal/classpath/DefaultModuleRegistry.java
+@@ -72,18 +72,7 @@ public class DefaultModuleRegistry implements ModuleRegistry, GradleDistribution
+     }
+ 
+     private static File findDistDir() {
+-        File codeSource = ClasspathUtil.getClasspathForClass(DefaultModuleRegistry.class);
+-        if (codeSource.isFile()) {
+-            // Loaded from a JAR - let's see if its in the lib directory, and there's a lib/plugins directory
+-            File libDir = codeSource.getParentFile();
+-            if (!libDir.getName().equals("lib") || !new File(libDir, "plugins").isDirectory()) {
+-                return null;
+-            }
+-            return libDir.getParentFile();
+-        } else {
+-            // Loaded from a classes dir - assume we're running from the ide or tests
+-            return null;
+-        }
++        return new File("/usr/share/gradle");
+     }
+ 
+     /**
+diff --git a/subprojects/launcher/launcher.gradle b/subprojects/launcher/launcher.gradle
+index 0fb144f..2f6ef0d 100644
+--- a/subprojects/launcher/launcher.gradle
++++ b/subprojects/launcher/launcher.gradle
+@@ -25,13 +25,6 @@ integTestTasks.all {
+     }
+ }
+ 
+-jar {
+-    manifest.mainAttributes('Main-Class': "org.gradle.launcher.GradleMain")
+-    doFirst {
+-        jar.manifest.mainAttributes('Class-Path': "${project(':core').jar.archivePath.name} ${project(':baseServices').jar.archivePath.name}")
+-    }
+-}
+-
+ task startScripts(type: StartScriptGenerator) {
+     startScriptsDir = new File("$buildDir/startScripts")
+     classpath = configurations.startScriptGenerator
+diff --git a/subprojects/launcher/src/main/java/org/gradle/launcher/daemon/client/DefaultDaemonStarter.java b/subprojects/launcher/src/main/java/org/gradle/launcher/daemon/client/DefaultDaemonStarter.java
+index 1cc7814..926230b 100755
+--- a/subprojects/launcher/src/main/java/org/gradle/launcher/daemon/client/DefaultDaemonStarter.java
++++ b/subprojects/launcher/src/main/java/org/gradle/launcher/daemon/client/DefaultDaemonStarter.java
+@@ -59,6 +59,8 @@ public class DefaultDaemonStarter implements DaemonStarter {
+         DefaultModuleRegistry registry = new DefaultModuleRegistry();
+         Set<File> bootstrapClasspath = new LinkedHashSet<File>();
+         bootstrapClasspath.addAll(registry.getModule("gradle-launcher").getImplementationClasspath().getAsFiles());
++        bootstrapClasspath.addAll(registry.getModule("gradle-core").getImplementationClasspath().getAsFiles());
++        bootstrapClasspath.addAll(registry.getModule("gradle-base-services").getImplementationClasspath().getAsFiles());
+         if (registry.getGradleHome() == null) {
+             // Running from the classpath - chuck in everything we can find
+             bootstrapClasspath.addAll(registry.getFullClasspath());
+@@ -119,4 +121,4 @@ public class DefaultDaemonStarter implements DaemonStarter {
+         }
+     }
+ 
+-}
+\ No newline at end of file
++}
+-- 
+1.9.3
+
