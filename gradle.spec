@@ -60,7 +60,7 @@ Patch12:        0013-Use-unversioned-dependency-JAR-names.patch
 Patch13:        0014-Don-t-declare-dependency-on-jarjars.patch
 
 # from gradle-2.13-7.fc26
-Patch100:       0009-Port-to-Polyglot-0.1.8.mod.patch
+Patch100:       0009-Port-to-Polyglot-0.1.8.patch
 
 # Dependencies on build system used.  In bootstrap mode we use plain
 # groovyc to compile Gradle, otherwise Gradle is built with itself.
