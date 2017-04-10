@@ -234,8 +234,8 @@ BuildRequires:  mvn(org.slf4j:slf4j-api)
 BuildRequires:  mvn(org.sonatype.oss:oss-parent:pom:)
 BuildRequires:  mvn(org.sonatype.plexus:plexus-cipher)
 BuildRequires:  mvn(org.sonatype.plexus:plexus-sec-dispatcher)
-BuildRequires:  mvn(org.sonatype.pmaven:pmaven-common)
-BuildRequires:  mvn(org.sonatype.pmaven:pmaven-groovy)
+#BuildRequires:  mvn(org.sonatype.pmaven:pmaven-common)
+#BuildRequires:  mvn(org.sonatype.pmaven:pmaven-groovy)
 #BuildRequires:  mvn(org.spockframework:spock-core)
 BuildRequires:  mvn(org.testng:testng)
 BuildRequires:  mvn(org.yaml:snakeyaml)
@@ -374,10 +374,10 @@ Requires:       rhino
 Requires:       sisu-plexus
 Requires:       slf4j
 Requires:       snakeyaml
-Requires:       sonar-batch-bootstrapper
+#Requires:       sonar-batch-bootstrapper
 Requires:       stax2-api
-Requires:       tesla-polyglot-common
-Requires:       tesla-polyglot-groovy
+#Requires:       tesla-polyglot-common
+#Requires:       tesla-polyglot-groovy
 Requires:       testng
 Requires:       woodstox-core
 Requires:       xalan-j2
