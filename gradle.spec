@@ -16,6 +16,7 @@ Name:           gradle
 Version:        2.2.1
 Release:        0.2 #6%{?dist}
 Summary:        Build automation tool
+Group:          Development/Java
 # Some examples and integration tests are under GNU LGPL and Boost
 # Software License, but are not used to create binary package.
 License:        ASL 2.0
