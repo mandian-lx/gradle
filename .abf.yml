@@ -1,5 +1,13 @@
 sources:
-  gradle-2.2-src.zip: e6d9fd96c5ece782fb7ddec8d6d80943a188529a
-  gradle-2.2.1-bin.zip: 97ae081bc8be8b691e21dcf792eff1630dbc8eb6
-  gradle-font-metadata.xml: 54c90a900c174d0c8fec306a7b2417c9c75c6397
-  gradle-jquery-metadata.xml: f0f927903c16802d567cf976c7af94ba2bccdd73
+  "gradle-bootstrap-gererate-resources.py":   15048acdeb4577e6304649eac940b71c03c6404c
+  "gradle-jquery-metadata.xml":   f0f927903c16802d567cf976c7af94ba2bccdd73
+  "gradle-bootstrap-module-list":   cf36f082ed3a3729ad57257dca387a7715bcaaef
+  "gradle.desktop":   ca1cbc539ce250f08bc32a445c3c7848c8a6329d
+  "gradle-bootstrap-plugin.properties":   8f5e7c518907e0b29249155d908677ed30bcf9ee
+  "gradle-bootstrap.sh":   1c8ccc60375c20d0e6d1bf8cced0220ab6c052b2
+  "gradle-launcher.sh":   5e29747e861a9671ff4720d93060608ff1453937
+  "gradle-bootstrap-module-dependencies":   42d0af50d371a884d168d7fbcbe2b9e4e8d8dec8
+  "all-released-versions.json":   20a92c6386127d2f371b6afd06838115ccef421e
+  "gradle-2.2.1-src.zip":   c34f9c32dbac7dc97e15cdc1782a8d3a5c305361
+  "gradle-bootstrap-default-imports.txt":   ad79c24b23e8d2910957f3ef736ba16fd0dc5ebb
+  "gradle-font-metadata.xml":   54c90a900c174d0c8fec306a7b2417c9c75c6397

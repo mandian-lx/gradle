@@ -1,7 +1,7 @@
-From 79ff2731194cd069b51948ade986898fe1a9cda4 Mon Sep 17 00:00:00 2001
+From 3760a6767bc6c11259c036e5d9c28cd202edcf54 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Sun, 9 Nov 2014 21:37:37 +0100
-Subject: [PATCH 8/9] Implement XMvn repository factory method
+Subject: [PATCH 08/14] Implement XMvn repository factory method
 
 ---
  .../internal/artifacts/BaseRepositoryFactory.java  |  3 ++
@@ -125,5 +125,5 @@ index 1392f32..e37790c 100644
 +    }
  }
 -- 
-1.9.3
+2.1.0
 

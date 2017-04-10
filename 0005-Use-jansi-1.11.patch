@@ -1,7 +1,7 @@
-From 23584362377b8c4593327f3f40d3bc2dbe9b68a8 Mon Sep 17 00:00:00 2001
+From 291e2fb748f6927eae4ffead739bf223dd871063 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Fri, 7 Nov 2014 15:02:11 +0100
-Subject: [PATCH 5/9] Use jansi 1.11
+Subject: [PATCH 05/14] Use jansi 1.11
 
 ---
  subprojects/native/native.gradle | 2 +-
@@ -21,5 +21,5 @@ index 1639a64..96e46cc 100755
      }
      compile libraries.guava
 -- 
-1.9.3
+2.1.0
 

@@ -1,0 +1,55 @@
+From 7063827838c75f5a450892266e7bd754ec8b98ef Mon Sep 17 00:00:00 2001
+From: Michael Simacek <msimacek@redhat.com>
+Date: Sat, 7 Feb 2015 17:43:40 +0100
+Subject: [PATCH 14/14] Don't declare dependency on jarjars
+
+---
+ .../dependency-management.gradle                    | 21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
+
+diff --git a/subprojects/dependency-management/dependency-management.gradle b/subprojects/dependency-management/dependency-management.gradle
+index 548b7ef..c971dbe 100644
+--- a/subprojects/dependency-management/dependency-management.gradle
++++ b/subprojects/dependency-management/dependency-management.gradle
+@@ -20,9 +20,7 @@ dependencies {
+     runtime libraries.xbean //maven3 classes dependency
+     runtime "org.bouncycastle:bcprov-jdk15:1.46@jar"
+ 
+-    compile fileTree("$buildDir/libs/jarjar") {
+-        builtBy 'jarJarMaven3'
+-    }
++    compile libraries.maven3
+ 
+     mvn3Input libraries.maven3
+ 
+@@ -34,27 +32,10 @@ dependencies {
+     testFixturesCompile project(":internalIntegTesting")
+ }
+ 
+-task jarJarMaven3(type: JarJar) {
+-    inputJars = configurations.mvn3Input
+-    outputDir = file("$buildDir/libs/jarjar")
+-
+-    //unfortunately, all those need to be jarjarred.
+-    // Even if some library (like aether) is not included in maven-ant-tasks it has
+-    // META-INF/plexus/components.xml that to jarjarred components.
+-    //rule('org.apache.maven.**', 'org.gradle.mvn3.org.apache.maven.@1')
+-    //rule('org.codehaus.**', 'org.gradle.mvn3.org.codehaus.@1')
+-    //rule('org.sonatype.**', 'org.gradle.mvn3.org.sonatype.@1')
+-    //rule('org.eclipse.aether.**', 'org.gradle.mvn3.org.eclipse.aether.@1')
+-
+-    avoidConflictingPlexusComponents(it)
+-}
+-
+ if(isWindows && javaVersion.java5){
+     compileTestGroovy.options.fork (memoryMaximumSize: '512m')
+ }
+ 
+-classpathManifest.dependsOn jarJarMaven3 //see GRADLE-2521
+-
+ //adding explicit task dependencies due to https://issues.gradle.org/browse/GRADLE-2481
+ def allJarJars = tasks.withType(JarJar)
+ ideaModule.dependsOn allJarJars
+-- 
+2.1.0
+

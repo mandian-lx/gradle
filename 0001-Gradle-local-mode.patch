@@ -1,7 +1,7 @@
-From c3d41fbc30e73804753f26413e87c0a549cdf652 Mon Sep 17 00:00:00 2001
+From 65a9bbf9af98fa63eb1a52acac4401870d3b5a00 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Wed, 15 Oct 2014 14:23:30 +0200
-Subject: [PATCH 1/9] Gradle local mode
+Subject: [PATCH 01/14] Gradle local mode
 
 ---
  build.gradle                                         | 1 +
@@ -84,5 +84,5 @@ index ad0c7c2..87cbf3b 100644
  }
  
 -- 
-1.9.3
+2.1.0
 

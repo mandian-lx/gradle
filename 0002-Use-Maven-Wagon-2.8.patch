@@ -1,7 +1,7 @@
-From 53f91899760ef6ca6f7a86dc70ea0f369c34f93b Mon Sep 17 00:00:00 2001
+From a751e554a906a8d21eee4be0d1ffe98f2a7f0247 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Mon, 20 Oct 2014 15:08:43 +0200
-Subject: [PATCH 2/9] Use Maven Wagon 2.8
+Subject: [PATCH 02/14] Use Maven Wagon 2.8
 
 ---
  gradle/dependencies.gradle | 6 +++---
@@ -25,5 +25,5 @@ index 19d3ad0..14a360f 100755
      //eather:
      dependency "org.sonatype.aether:aether-api:1.13.1@jar"
 -- 
-1.9.3
+2.1.0
 

@@ -1,0 +1,41 @@
+From a6e9e2c303fbaf8f3a6d3533ce685dbe0d5dee0c Mon Sep 17 00:00:00 2001
+From: Mikolaj Izdebski <mizdebsk@redhat.com>
+Date: Tue, 20 Jan 2015 11:59:22 +0100
+Subject: [PATCH 10/14] Compatibility with Guava 18.0
+
+---
+ .../ApplicationClassesInSystemClassLoaderWorkerFactory.java      | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/subprojects/core/src/main/groovy/org/gradle/process/internal/child/ApplicationClassesInSystemClassLoaderWorkerFactory.java b/subprojects/core/src/main/groovy/org/gradle/process/internal/child/ApplicationClassesInSystemClassLoaderWorkerFactory.java
+index f7613eb..8b3d393 100644
+--- a/subprojects/core/src/main/groovy/org/gradle/process/internal/child/ApplicationClassesInSystemClassLoaderWorkerFactory.java
++++ b/subprojects/core/src/main/groovy/org/gradle/process/internal/child/ApplicationClassesInSystemClassLoaderWorkerFactory.java
+@@ -16,8 +16,7 @@
+ 
+ package org.gradle.process.internal.child;
+ 
+-import com.google.common.io.ByteStreams;
+-import com.google.common.io.InputSupplier;
++import com.google.common.io.ByteSource;
+ import org.gradle.api.UncheckedIOException;
+ import org.gradle.api.internal.ClassPathRegistry;
+ import org.gradle.api.logging.Logger;
+@@ -96,11 +95,11 @@ public class ApplicationClassesInSystemClassLoaderWorkerFactory implements Worke
+             }
+             outstr.close();
+             final InputStream originalStdin = execSpec.getStandardInput();
+-            InputStream input = ByteStreams.join(ByteStreams.newInputStreamSupplier(bytes.toByteArray()), new InputSupplier<InputStream>() {
+-                public InputStream getInput() throws IOException {
++            InputStream input = ByteSource.concat(ByteSource.wrap(bytes.toByteArray()), new ByteSource() {
++                public InputStream openStream() throws IOException {
+                     return originalStdin;
+                 }
+-            }).getInput();
++            }).openStream();
+             execSpec.setStandardInput(input);
+         } catch (IOException e) {
+             throw new UncheckedIOException(e);
+-- 
+2.1.0
+

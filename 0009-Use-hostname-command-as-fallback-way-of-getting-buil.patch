@@ -1,7 +1,7 @@
-From 88a6b1487441cc51b91391f7efbde5d82c257073 Mon Sep 17 00:00:00 2001
+From 23919f28b4999145d575c065f033a6fa526ea1d7 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Thu, 20 Nov 2014 11:04:23 +0100
-Subject: [PATCH 9/9] Use hostname command as fallback way of getting build
+Subject: [PATCH 09/14] Use hostname command as fallback way of getting build
  host name
 
 - getHostName() may fail for number of reasons, for example when
@@ -36,5 +36,5 @@ index eb0209e..16882d1 100644
          def data = [
                  commitId: determineCommitId.commitId,
 -- 
-1.9.3
+2.1.0
 

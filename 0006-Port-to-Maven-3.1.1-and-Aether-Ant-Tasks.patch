@@ -1,10 +1,10 @@
-From 60c0c212e1de552613b530d707c863ccba3d2626 Mon Sep 17 00:00:00 2001
+From 5afd16dc00e401d6f5aa4e6d97960ba5621d84de Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Fri, 31 Oct 2014 09:23:37 +0100
-Subject: [PATCH 6/9] Port to Maven 3.1.1 and Aether Ant Tasks
+Subject: [PATCH 06/14] Port to Maven 3.1.1 and Aether Ant Tasks
 
 ---
- gradle/dependencies.gradle                         | 57 ++++++++++-----
+ gradle/dependencies.gradle                         | 57 +++++++++----
  .../plugins/internal/maven/Maven2Gradle.groovy     |  2 +-
  .../internal/maven/MavenProjectXmlWriter.java      |  4 +-
  .../internal/maven/MavenProjectsCreator.java       | 24 +++---
@@ -14,29 +14,31 @@ Subject: [PATCH 6/9] Port to Maven 3.1.1 and Aether Ant Tasks
  .../mvnsettings/DefaultMavenSettingsProvider.java  |  4 +-
  .../mvnsettings/MavenSettingsProvider.java         |  4 +-
  .../maven/internal/DefaultMavenPom.java            |  6 +-
- .../maven/internal/ant/AbstractMavenResolver.java  | 63 ++++++++++------
- .../maven/internal/ant/BaseMavenDeployer.java      | 85 +++++++++++++++++-----
+ .../maven/internal/ant/AbstractMavenResolver.java  | 71 ++++++++++------
+ .../maven/internal/ant/BaseMavenDeployer.java      | 98 ++++++++++++++++------
  .../maven/internal/ant/BaseMavenInstaller.java     | 12 +--
- .../maven/internal/ant/CustomDeployTask.java       | 45 ------------
- .../ant/CustomInstallDeployTaskSupport.java        | 27 -------
- .../maven/internal/ant/CustomInstallTask.java      | 38 ----------
- .../internal/ant/EmptyMavenSettingsSupplier.java   |  9 ++-
- .../maven/internal/ant/GradleWagonProvider.java    | 38 ++++++++++
- .../maven/internal/ant/LoggingHelper.java          | 43 -----------
+ .../maven/internal/ant/CustomDeployTask.java       | 45 ----------
+ .../ant/CustomInstallDeployTaskSupport.java        | 27 ------
+ .../maven/internal/ant/CustomInstallTask.java      | 38 ---------
+ .../maven/internal/ant/CustomRemoteRepository.java | 29 +++++++
+ .../internal/ant/EmptyMavenSettingsSupplier.java   |  9 +-
+ .../maven/internal/ant/GradleWagonProvider.java    | 38 +++++++++
+ .../maven/internal/ant/LoggingHelper.java          | 43 ----------
  .../maven/internal/ant/MavenSettingsSupplier.java  |  4 +-
  .../ant/MaybeUserMavenSettingsSupplier.java        | 11 ++-
  .../ProjectDependencyArtifactIdExtractorHack.java  |  3 +-
  .../maven/internal/ant/RepositoryBuilder.java      | 24 ++++--
- .../maven/internal/ant/RepositoryFactory.java      | 19 +++--
- .../AbstractAntTaskBackedMavenPublisher.java       | 58 +++++----------
- .../AntTaskBackedMavenLocalPublisher.java          | 41 +++--------
- .../publisher/AntTaskBackedMavenPublisher.java     | 49 +++++--------
+ .../maven/internal/ant/RepositoryFactory.java      | 21 +++--
+ .../AbstractAntTaskBackedMavenPublisher.java       | 58 ++++---------
+ .../AntTaskBackedMavenLocalPublisher.java          | 41 +++------
+ .../publisher/AntTaskBackedMavenPublisher.java     | 47 ++++-------
  .../publisher/MavenRemoteRepositoryFactory.java    |  6 +-
  .../publisher/ValidatingMavenPublisher.java        |  6 +-
- 29 files changed, 319 insertions(+), 382 deletions(-)
+ 30 files changed, 363 insertions(+), 388 deletions(-)
  delete mode 100644 subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/CustomDeployTask.java
  delete mode 100644 subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/CustomInstallDeployTaskSupport.java
  delete mode 100644 subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/CustomInstallTask.java
+ create mode 100644 subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/CustomRemoteRepository.java
  create mode 100644 subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/GradleWagonProvider.java
  delete mode 100644 subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/LoggingHelper.java
 
@@ -294,10 +296,10 @@ index 482c0a9..80b1ad9 100644
          effectivePom.withXmlActions = withXmlActions;
          whenConfiguredActions.execute(effectivePom);
 diff --git a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/AbstractMavenResolver.java b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/AbstractMavenResolver.java
-index 854202f..a912403 100644
+index 854202f..6d35082 100644
 --- a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/AbstractMavenResolver.java
 +++ b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/AbstractMavenResolver.java
-@@ -16,12 +16,12 @@
+@@ -16,12 +16,13 @@
  package org.gradle.api.publication.maven.internal.ant;
  
  import groovy.lang.Closure;
@@ -308,13 +310,22 @@ index 854202f..a912403 100644
 +
  import org.apache.maven.settings.Settings;
  import org.apache.tools.ant.Project;
++import org.eclipse.aether.internal.ant.AntRepoSys;
 +import org.eclipse.aether.internal.ant.tasks.AbstractDistTask;
 +import org.eclipse.aether.internal.ant.types.Artifact;
 +import org.eclipse.aether.internal.ant.types.Pom;
  import org.gradle.api.Action;
  import org.gradle.api.artifacts.PublishArtifact;
  import org.gradle.api.artifacts.maven.*;
-@@ -71,7 +71,7 @@ public abstract class AbstractMavenResolver extends AbstractArtifactRepository i
+@@ -41,6 +42,7 @@ import org.gradle.logging.LoggingManagerInternal;
+ import org.gradle.util.AntUtil;
+ 
+ import java.io.File;
++import java.lang.reflect.Method;
+ import java.util.Set;
+ 
+ public abstract class AbstractMavenResolver extends AbstractArtifactRepository implements MavenResolver, ModuleVersionPublisher, ResolutionAwareRepository, PublicationAwareRepository {
+@@ -71,7 +73,7 @@ public abstract class AbstractMavenResolver extends AbstractArtifactRepository i
          return this;
      }
  
@@ -323,7 +334,7 @@ index 854202f..a912403 100644
  
      public void publish(IvyModulePublishMetaData moduleVersion) {
          for (IvyModuleArtifactPublishMetaData artifact : moduleVersion.getArtifacts()) {
-@@ -80,32 +80,33 @@ public abstract class AbstractMavenResolver extends AbstractArtifactRepository i
+@@ -80,32 +82,39 @@ public abstract class AbstractMavenResolver extends AbstractArtifactRepository i
          publish();
      }
  
@@ -357,8 +368,14 @@ index 854202f..a912403 100644
          }
          mavenSettingsSupplier.done();
 -        settings = ((CustomInstallDeployTaskSupport) installDeployTaskSupport).getSettings();
-+        // FIXME obtain settings used
-+        settings = null;
++
++        try {
++            Method getter = AntRepoSys.class.getDeclaredMethod("getSettings");
++            getter.setAccessible(true);
++            settings = (Settings) getter.invoke(AntRepoSys.getInstance(project));
++        } catch (ReflectiveOperationException e) {
++            throw new RuntimeException(e);
++        }
      }
  
 -    private void execute(InstallDeployTaskSupport deployTask) {
@@ -366,7 +383,7 @@ index 854202f..a912403 100644
          loggingManager.captureStandardOutput(LogLevel.INFO).start();
          try {
              deployTask.execute();
-@@ -114,19 +115,33 @@ public abstract class AbstractMavenResolver extends AbstractArtifactRepository i
+@@ -114,19 +123,33 @@ public abstract class AbstractMavenResolver extends AbstractArtifactRepository i
          }
      }
  
@@ -411,7 +428,7 @@ index 854202f..a912403 100644
      }
  
 diff --git a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/BaseMavenDeployer.java b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/BaseMavenDeployer.java
-index 35b0e95..fe7adf9 100644
+index 35b0e95..dd0a310 100644
 --- a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/BaseMavenDeployer.java
 +++ b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/BaseMavenDeployer.java
 @@ -1,5 +1,5 @@
@@ -458,7 +475,13 @@ index 35b0e95..fe7adf9 100644
  import java.util.ArrayList;
  import java.util.Collection;
  import java.util.List;
-@@ -48,37 +62,68 @@ public class BaseMavenDeployer extends AbstractMavenResolver implements MavenDep
+@@ -42,43 +56,77 @@ public class BaseMavenDeployer extends AbstractMavenResolver implements MavenDep
+     // todo remove this property once configuration can handle normal file system dependencies
+     private List<File> protocolProviderJars = new ArrayList<File>();
+ 
+-    private boolean uniqueVersion = true;
+-
+     public BaseMavenDeployer(PomFilterContainer pomFilterContainer, ArtifactPomContainer artifactPomContainer, LoggingManagerInternal loggingManager) {
          super(pomFilterContainer, artifactPomContainer, loggingManager);
      }
  
@@ -470,8 +493,6 @@ index 35b0e95..fe7adf9 100644
          deployTask.setProject(project);
 -        deployTask.setUniqueVersion(isUniqueVersion());
 -        addProtocolProvider(deployTask);
-+        // XXX
-+        //deployTask.setUniqueVersion(isUniqueVersion());
          addRemoteRepositories(deployTask);
          return deployTask;
      }
@@ -538,11 +559,33 @@ index 35b0e95..fe7adf9 100644
 -        deployTask.addRemoteRepository(remoteRepository);
 -        deployTask.addRemoteSnapshotRepository(remoteSnapshotRepository);
 +    private void addRemoteRepositories(Deploy deployTask) {
++        Project project = deployTask.getProject();
++        if (remoteRepository != null) {
++            remoteRepository.setProject(project);
++        }
++        if (remoteSnapshotRepository != null) {
++            remoteSnapshotRepository.setProject(project);
++        }
 +        deployTask.addRemoteRepo(remoteRepository);
 +        deployTask.addSnapshotRepo(remoteSnapshotRepository);
      }
  
      public RemoteRepository getRepository() {
+@@ -110,10 +158,12 @@ public class BaseMavenDeployer extends AbstractMavenResolver implements MavenDep
+     }
+ 
+     public boolean isUniqueVersion() {
+-        return uniqueVersion;
++        return true;
+     }
+ 
+     public void setUniqueVersion(boolean uniqueVersion) {
+-        this.uniqueVersion = uniqueVersion;
++        if (!uniqueVersion) {
++            throw new IllegalArgumentException("Non-unique snapshot versions are not supported by this version of Gradle");
++        }
+     }
+ }
 diff --git a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/BaseMavenInstaller.java b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/BaseMavenInstaller.java
 index a901694..19541f0 100644
 --- a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/BaseMavenInstaller.java
@@ -705,6 +748,41 @@ index 15079c4..0000000
 -
 -
 -}
+diff --git a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/CustomRemoteRepository.java b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/CustomRemoteRepository.java
+new file mode 100644
+index 0000000..df82986
+--- /dev/null
++++ b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/CustomRemoteRepository.java
+@@ -0,0 +1,29 @@
++package org.gradle.api.publication.maven.internal.ant;
++
++import java.util.ArrayList;
++import java.util.List;
++
++import org.apache.tools.ant.Project;
++import org.eclipse.aether.internal.ant.AntRepoSys;
++import org.eclipse.aether.internal.ant.types.Proxy;
++import org.eclipse.aether.internal.ant.types.RemoteRepository;
++
++class CustomRemoteRepository extends RemoteRepository {
++
++    private final List<Proxy> proxies = new ArrayList<Proxy>();
++
++    @Override
++    public void setProject(Project project) {
++        super.setProject(project);
++
++        AntRepoSys repoSys = AntRepoSys.getInstance(project);
++        for (Proxy proxy : proxies) {
++            repoSys.addProxy(proxy);
++        }
++    }
++
++    public void addProxy(Proxy proxy) {
++        proxies.add(proxy);
++    }
++
++}
 diff --git a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/EmptyMavenSettingsSupplier.java b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/EmptyMavenSettingsSupplier.java
 index 5549dcb..0119703 100644
 --- a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/EmptyMavenSettingsSupplier.java
@@ -944,16 +1022,17 @@ index bff4576..97afd1e 100644
      }
  }
 diff --git a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/RepositoryFactory.java b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/RepositoryFactory.java
-index e3517aa..f98e753 100644
+index e3517aa..d4e1424 100644
 --- a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/RepositoryFactory.java
 +++ b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/ant/RepositoryFactory.java
-@@ -15,12 +15,13 @@
+@@ -15,12 +15,14 @@
   */
  package org.gradle.api.publication.maven.internal.ant;
  
 +import java.util.UUID;
 +
 +import org.eclipse.aether.internal.ant.types.Authentication;
++import org.eclipse.aether.internal.ant.types.Proxy;
 +import org.eclipse.aether.internal.ant.types.RemoteRepository;
 +
  import groovy.swing.factory.BeanFactory;
@@ -965,19 +1044,16 @@ index e3517aa..f98e753 100644
  
  public class RepositoryFactory extends BeanFactory {
      public RepositoryFactory(Class klass) {
-@@ -32,15 +33,19 @@ public class RepositoryFactory extends BeanFactory {
+@@ -32,20 +34,21 @@ public class RepositoryFactory extends BeanFactory {
      }
  
      public void setChild(FactoryBuilderSupport builder, Object parent, Object child) {
 +        getRepository(parent).setId(UUID.randomUUID().toString());
          if (child instanceof Authentication) {
              getRepository(parent).addAuthentication((Authentication) child);
-+        // XXX
-+        /*
          } else if (child instanceof Proxy) {
              getRepository(parent).addProxy((Proxy) child);
 -        } else if (child instanceof RepositoryPolicy) {
-+        */
 +        } else if (child instanceof RemoteRepository.Policy) {
              if (builder.getCurrentName().equals("snapshots")) {
 -                getRepository(parent).addSnapshots((RepositoryPolicy) child);
@@ -988,6 +1064,13 @@ index e3517aa..f98e753 100644
              }
          }
      }
+ 
+-    private RemoteRepository getRepository(Object parent) {
+-        return (RemoteRepository) parent;
++    private CustomRemoteRepository getRepository(Object parent) {
++        return (CustomRemoteRepository) parent;
+     }
+ }
 diff --git a/subprojects/maven/src/main/groovy/org/gradle/api/publish/maven/internal/publisher/AbstractAntTaskBackedMavenPublisher.java b/subprojects/maven/src/main/groovy/org/gradle/api/publish/maven/internal/publisher/AbstractAntTaskBackedMavenPublisher.java
 index 6930e63..4bf3736 100644
 --- a/subprojects/maven/src/main/groovy/org/gradle/api/publish/maven/internal/publisher/AbstractAntTaskBackedMavenPublisher.java
@@ -1161,10 +1244,10 @@ index 2be6c47..645444a 100644
      }
  }
 diff --git a/subprojects/maven/src/main/groovy/org/gradle/api/publish/maven/internal/publisher/AntTaskBackedMavenPublisher.java b/subprojects/maven/src/main/groovy/org/gradle/api/publish/maven/internal/publisher/AntTaskBackedMavenPublisher.java
-index a22dbf4..6637bf7 100644
+index a22dbf4..4d5492d 100644
 --- a/subprojects/maven/src/main/groovy/org/gradle/api/publish/maven/internal/publisher/AntTaskBackedMavenPublisher.java
 +++ b/subprojects/maven/src/main/groovy/org/gradle/api/publish/maven/internal/publisher/AntTaskBackedMavenPublisher.java
-@@ -16,53 +16,38 @@
+@@ -16,53 +16,36 @@
  
  package org.gradle.api.publish.maven.internal.publisher;
  
@@ -1204,8 +1287,6 @@ index a22dbf4..6637bf7 100644
 +        localRepository.setDir(temporaryDirFactory.create());
 +        AntRepoSys repoSys = AntRepoSys.getInstance(task.getProject());
 +        repoSys.setLocalRepository(localRepository);
-+        //XXX
-+        //deployTask.setUniqueVersion(true);
 +        return task;
      }
  
@@ -1277,5 +1358,5 @@ index 36a60c5..636b6aa 100644
  import java.io.File;
  import java.io.FileReader;
 -- 
-1.9.3
+2.1.0
 

@@ -1,7 +1,7 @@
-From d584818610cb47ba0c4d9063d0a0fd0a1fe93c04 Mon Sep 17 00:00:00 2001
+From b0cdc857c13b7ab5ee3ca7137f7c59f80d0319f3 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Wed, 22 Oct 2014 12:35:24 +0200
-Subject: [PATCH 3/9] Use bndlib 1.50.0
+Subject: [PATCH 03/14] Use bndlib 1.50.0
 
 ---
  subprojects/osgi/osgi.gradle                                          | 2 +-
@@ -65,5 +65,5 @@ index 3e3024d..7ea9bf4 100644
  import org.gradle.api.internal.file.FileResolver
  import org.gradle.api.java.archives.Attributes
 -- 
-1.9.3
+2.1.0
 

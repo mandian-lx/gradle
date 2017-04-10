@@ -1,27 +1,37 @@
 [{
-	"version":"2.3-20141117230044+0000",
-	"buildTime":"20141117230044+0000",
+	"version":"2.4-20150119230026+0000",
+	"buildTime":"20150119230026+0000",
 	"current":false,
 	"snapshot":true,
 	"nightly":true,
 	"activeRc":false,
 	"rcFor":"",
 	"broken":false,
-	"downloadUrl":"https:\/\/services.gradle.org\/distributions-snapshots\/gradle-2.3-20141117230044+0000-bin.zip"
+	"downloadUrl":"https:\/\/services.gradle.org\/distributions-snapshots\/gradle-2.4-20150119230026+0000-bin.zip"
+},{
+	"version":"2.2.1",
+	"buildTime":"20141124094535+0000",
+	"current":true,
+	"snapshot":false,
+	"nightly":false,
+	"activeRc":false,
+	"rcFor":"",
+	"broken":false,
+	"downloadUrl":"https:\/\/services.gradle.org\/distributions\/gradle-2.2.1-bin.zip"
 },{
 	"version":"2.2.1-rc-1",
 	"buildTime":"20141117101237+0000",
 	"current":false,
 	"snapshot":false,
 	"nightly":false,
-	"activeRc":true,
+	"activeRc":false,
 	"rcFor":"2.2.1",
 	"broken":false,
 	"downloadUrl":"https:\/\/services.gradle.org\/distributions\/gradle-2.2.1-rc-1-bin.zip"
 },{
 	"version":"2.2",
 	"buildTime":"20141110133144+0000",
-	"current":true,
+	"current":false,
 	"snapshot":false,
 	"nightly":false,
 	"activeRc":false,

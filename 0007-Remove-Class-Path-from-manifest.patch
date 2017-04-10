@@ -1,7 +1,7 @@
-From 9de91e7cecaafd4051e552578df58330d3828501 Mon Sep 17 00:00:00 2001
+From 0cdd0ec9c47b800338cb0d8fdc33beee9a0aa13e Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Sun, 9 Nov 2014 17:52:30 +0100
-Subject: [PATCH 7/9] Remove Class-Path from manifest
+Subject: [PATCH 07/14] Remove Class-Path from manifest
 
 ---
  .../api/internal/classpath/DefaultModuleRegistry.java       | 13 +------------
@@ -72,5 +72,5 @@ index 1cc7814..926230b 100755
 \ No newline at end of file
 +}
 -- 
-1.9.3
+2.1.0
 

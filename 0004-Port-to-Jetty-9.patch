@@ -1,7 +1,7 @@
-From f108e0edc29282adcebd4832161d563846d36cd1 Mon Sep 17 00:00:00 2001
+From deb4e9c651d21930fa31ee6aec392c25fcfa3111 Mon Sep 17 00:00:00 2001
 From: Michal Srb <msrb@redhat.com>
 Date: Fri, 31 Oct 2014 09:01:47 +0100
-Subject: [PATCH 4/9] Port to Jetty 9
+Subject: [PATCH 04/14] Port to Jetty 9
 
 Initial attempt
 ---
@@ -490,5 +490,5 @@ index 7f3fb08..a4e1dfb 100644
  import org.slf4j.LoggerFactory;
  
 -- 
-1.9.3
+2.1.0
 
