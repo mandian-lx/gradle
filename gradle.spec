@@ -66,7 +66,7 @@ Patch100:       0009-Port-to-Polyglot-0.1.8.patch
 # Dependencies on build system used.  In bootstrap mode we use plain
 # groovyc to compile Gradle, otherwise Gradle is built with itself.
 %if %{with bootstrap}
-BuildRequires:  groovy >= 2.3
+BuildRequires:  groovy #>= 2.3
 BuildRequires:  javapackages-local
 %else
 BuildRequires:  gradle-local >= 2.2
@@ -166,8 +166,8 @@ BuildRequires:  mvn(org.beanshell:bsh)
 BuildRequires:  mvn(org.bouncycastle:bcpg-jdk15)
 BuildRequires:  mvn(org.bouncycastle:bcprov-jdk15)
 BuildRequires:  mvn(org.codehaus.gpars:gpars)
-BuildRequires:  mvn(org.codehaus.groovy:groovy)
-BuildRequires:  mvn(org.codehaus.groovy:groovy-all)
+#BuildRequires:  mvn(org.codehaus.groovy:groovy)
+#BuildRequires:  mvn(org.codehaus.groovy:groovy-all)
 BuildRequires:  mvn(org.codehaus.jcsp:jcsp)
 BuildRequires:  mvn(org.codehaus.jettison:jettison)
 BuildRequires:  mvn(org.codehaus.jsr166-mirror:extra166y)
