@@ -458,7 +458,7 @@ sed -i "/publishedProjects =/s/.*/& project(':dependencyManagement'),/" build.gr
 %if %{with bootstrap}
 mkdir -p subprojects/docs/src/main/resources && cp %{SOURCE9920} subprojects/docs/src/main/resources/default-imports.txt
 cp %{SOURCE9921} subprojects/core/src/main/resources/gradle-plugins.properties
-%{SOURCE9900} %{SOURCE9910} %{SOURCE9911}
+sh %{SOURCE9900} %{SOURCE9910} %{SOURCE9911}
 %else
 gradle -x docs:distDocs --offline -s install -Pgradle_installPath=$PWD/inst \
     -PfinalRelease -Dbuild.number="%{?fedora:Fedora }%{?rhel:Red Hat }%{version}-%{release}"
