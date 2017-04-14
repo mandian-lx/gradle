@@ -62,6 +62,7 @@ Patch13:        0014-Don-t-declare-dependency-on-jarjars.patch
 
 # from gradle-2.13-7.fc26
 Patch100:       0009-Port-to-Polyglot-0.1.8.patch
+Patch101:       0011-Port-to-Kryo-3.0.patch
 
 # Dependencies on build system used.  In bootstrap mode we use plain
 # groovyc to compile Gradle, otherwise Gradle is built with itself.
@@ -420,6 +421,7 @@ legacy automation challenges.
 %patch13 -p1
 
 %patch100 -p1 -b.orig
+%patch101 -p1 -b.orig
 
 # Remove bundled wrapper JAR
 rm -rf gradle/wrapper/
