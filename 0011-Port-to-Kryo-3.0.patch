@@ -7,10 +7,10 @@ Subject: [PATCH 11/13] Port to Kryo 3.0
  .../main/java/org/gradle/internal/serialize/kryo/KryoBackedEncoder.java | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/subprojects/messaging/src/main/java/org/gradle/internal/serialize/kryo/KryoBackedEncoder.java b/subprojects/messaging/src/main/java/org/gradle/internal/serialize/kryo/KryoBackedEncoder.java
+diff --git a/subprojects/messaging/src/main/java/org/gradle/messaging/serialize/kryo/KryoBackedEncoder.java b/subprojects/messaging/src/main/java/org/gradle/messaging/serialize/kryo/KryoBackedEncoder.java
 index 17bdf2d..27f512f 100644
---- a/subprojects/messaging/src/main/java/org/gradle/internal/serialize/kryo/KryoBackedEncoder.java
-+++ b/subprojects/messaging/src/main/java/org/gradle/internal/serialize/kryo/KryoBackedEncoder.java
+--- a/subprojects/messaging/src/main/java/org/gradle/messaging/serialize/kryo/KryoBackedEncoder.java
++++ b/subprojects/messaging/src/main/java/org/gradle/messaging/serialize/kryo/KryoBackedEncoder.java
 @@ -78,7 +78,7 @@ public class KryoBackedEncoder extends AbstractEncoder implements FlushableEncod
       * Returns the total number of bytes written by this encoder, some of which is may still be buffered.
       */
