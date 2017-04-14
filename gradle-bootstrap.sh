@@ -215,7 +215,7 @@ for mod in $(cat "$1"); do
     # resources, but no compilable sources)
     if [[ -n "$srcdirs" ]]; then
 	echo "== groovyc $mod..."
-	groovyc -cp $classpath -j -d $classes_dir $(find $srcdirs -name *.java -o -name *.groovy)
+	groovyc -cp $classpath -j -J source=1.5 -J target=1.6 -d $classes_dir $(find $srcdirs -name *.java -o -name *.groovy)
     fi
 
     # Create JAR with classes, but not yet resources
