@@ -117,7 +117,7 @@ msv-core
 multiverse/multiverse-core
 native-platform
 nekohtml
-netty3-3.9.3
+netty3-3.10.6
 objectweb-asm/asm-all
 objenesis/objenesis
 org.eclipse.sisu.plexus
