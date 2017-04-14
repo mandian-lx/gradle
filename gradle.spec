@@ -453,9 +453,6 @@ sed -i 's/"-Werror" <<//' gradle/strictCompile.gradle
 sed -i "/publishedProjects =/s/.*/& project(':dependencyManagement'),/" build.gradle
 
 
-####
-#sed -i -e 's|return output.total();|return (int)output.total();|' subprojects/messaging/src/main/java/org/gradle/messaging/serialize/kryo/KryoBackedEncoder.java
-
 %build
 %if %{with bootstrap}
 mkdir -p subprojects/docs/src/main/resources && cp %{SOURCE9920} subprojects/docs/src/main/resources/default-imports.txt
