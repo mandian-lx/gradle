@@ -10,11 +10,11 @@
 # doesn't provide Maven metadata, and it may have some functionality
 # missing.  For this reason a normal non-bootstrap build should be
 # done immediately after Gradle is bootstrapped.
-%bcond_without bootstrap
+%bcond_with bootstrap
 
 Name:           gradle
 Version:        2.2.1
-Release:        0.2 #6%{?dist}
+Release:        0.3 #6%{?dist}
 Summary:        Build automation tool
 Group:          Development/Java
 # Some examples and integration tests are under GNU LGPL and Boost
