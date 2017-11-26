@@ -10,7 +10,7 @@
 # doesn't provide Maven metadata, and it may have some functionality
 # missing.  For this reason a normal non-bootstrap build should be
 # done immediately after Gradle is bootstrapped.
-%bcond_with bootstrap
+%bcond_without bootstrap
 
 Name:           gradle
 Version:        2.2.1
