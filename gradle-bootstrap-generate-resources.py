@@ -14,24 +14,32 @@
 #
 # Author: Mikolaj Izdebski <mizdebsk@redhat.com>
 
+import re
 import sys
 from glob import glob
 from zipfile import ZipFile
 
 
+def read_property(jar_path, props_name, prop_key):
+    prefix = prop_key + "="
+    prefix_len = len(prefix)
+    with ZipFile(jar_path) as jar:
+        with jar.open(props_name, "rU") as props:
+            for line in [line.rstrip() for line in props.readlines()]:
+                if line.startswith(prefix) and line[prefix_len:]:
+                    return line[prefix_len:]
+
+
 class GradleModule(object):
     def __init__(self, path):
-        self.name = path[path.rindex("/") + 1 : path.rindex("-")]
+        self.name = re.match(r'.*/(.+)-[0-9.]*jar', path).group(1)
         self.path = path
         self.dependencies = []
 
     def read_dependencies(self):
-        with ZipFile(self.path) as jar:
-            props_name = self.name + "-classpath.properties"
-            with jar.open(props_name, "rU") as props:
-                for line in [line.rstrip() for line in props.readlines()]:
-                    if line.startswith("projects=") and line[9:]:
-                        self.dependencies = line[9:].split(",")
+        projects = read_property(self.path, self.name + "-classpath.properties", "projects")
+        if projects:
+            self.dependencies = projects.split(",")
 
     def __eq__(self, other):
         return self.name == other.name
@@ -118,5 +126,9 @@ with open("gradle-bootstrap-module-dependencies", "w") as f:
         f.write("%s=%s\n" % (module.name, ",".join(dep.name for dep in module.dependencies)))
 
 # Extract some other resoures from Gradle JARs
+extract_resource(module_mapping["gradle-docs"], "api-mapping.txt", "gradle-bootstrap-api-mapping.txt")
 extract_resource(module_mapping["gradle-docs"], "default-imports.txt", "gradle-bootstrap-default-imports.txt")
 extract_resource(module_mapping["gradle-core"], "gradle-plugins.properties", "gradle-bootstrap-plugin.properties")
+extract_resource(module_mapping["gradle-core"], "gradle-implementation-plugins.properties", "gradle-bootstrap-implementation-plugin.properties")
+extract_resource(module_mapping["gradle-runtime-api-info"], "org/gradle/api/internal/runtimeshaded/api-relocated.txt", "gradle-bootstrap-api-relocated.txt")
+extract_resource(module_mapping["gradle-runtime-api-info"], "org/gradle/api/internal/runtimeshaded/test-kit-relocated.txt", "gradle-bootstrap-test-kit-relocated.txt")

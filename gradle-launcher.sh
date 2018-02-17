@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 set -e
 ulimit -n $(ulimit -H -n)
@@ -17,7 +17,7 @@ fi
 set_jvm
 set_javacmd
 
-set_classpath gradle/gradle-launcher gradle/gradle-core gradle/gradle-base-services
+set_classpath gradle/gradle-launcher gradle/gradle-core-api gradle/gradle-core gradle/gradle-base-services
 
 # Split up the JVM_OPTS And GRADLE_OPTS values into an array, following the shell quoting and substitution rules
 function splitJvmOpts() {

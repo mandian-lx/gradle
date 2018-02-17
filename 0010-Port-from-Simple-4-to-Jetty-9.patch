@@ -1,17 +1,38 @@
-From cc319298430cfeabfefc95984196a92441c06483 Mon Sep 17 00:00:00 2001
+From adbb971eb3bab79e7b118334c2d0ea8254badd14 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Fri, 30 Jan 2015 13:16:40 +0100
-Subject: [PATCH 12/14] Port from Simple 4 to Jetty 9
+Subject: [PATCH 10/16] Port from Simple 4 to Jetty 9
 
 ---
+ gradle/dependencies.gradle                         |  6 +-
  subprojects/javascript/javascript.gradle           |  2 +-
- .../http/simple/SimpleHttpFileServerFactory.java   | 38 +++++------
- .../simple/internal/SimpleFileServerContainer.java | 75 ----------------------
- 3 files changed, 20 insertions(+), 95 deletions(-)
- delete mode 100644 subprojects/javascript/src/main/groovy/org/gradle/plugins/javascript/envjs/http/simple/internal/SimpleFileServerContainer.java
+ .../http/simple/SimpleHttpFileServerFactory.java   | 38 +++++-----
+ .../simple/internal/SimpleFileServerContainer.java | 82 ----------------------
+ 4 files changed, 23 insertions(+), 105 deletions(-)
+ delete mode 100644 subprojects/javascript/src/main/java/org/gradle/plugins/javascript/envjs/http/simple/internal/SimpleFileServerContainer.java
 
+diff --git a/gradle/dependencies.gradle b/gradle/dependencies.gradle
+index 7b7be2a583d..6e17a88bc31 100755
+--- a/gradle/dependencies.gradle
++++ b/gradle/dependencies.gradle
+@@ -66,12 +66,12 @@ libraries.logback_classic = dependencies.module('ch.qos.logback:logback-classic:
+ }
+ 
+ // Jetty
+-libraries.servlet_api = "org.mortbay.jetty:servlet-api:2.5-20081211@jar"
+-libraries.jetty_util = dependencies.module("org.mortbay.jetty:jetty-util:6.1.26") {
++libraries.servlet_api = "javax.servlet:javax.servlet-api"
++libraries.jetty_util = dependencies.module("org.eclipse.jetty:jetty-util") {
+     dependency libraries.slf4j_api
+     dependency libraries.servlet_api
+ }
+-libraries.jetty = dependencies.module("org.mortbay.jetty:jetty:6.1.26") {
++libraries.jetty = dependencies.module("org.eclipse.jetty:jetty-server") {
+     dependency libraries.jetty_util
+     dependency libraries.servlet_api
+ }
 diff --git a/subprojects/javascript/javascript.gradle b/subprojects/javascript/javascript.gradle
-index 0f60c8c..5fd1eef 100644
+index 1e94bd8de68..18970197521 100644
 --- a/subprojects/javascript/javascript.gradle
 +++ b/subprojects/javascript/javascript.gradle
 @@ -19,7 +19,7 @@ dependencies {
@@ -20,13 +41,13 @@ index 0f60c8c..5fd1eef 100644
      compile libraries.gson // used by JsHint
 -    compile "org.simpleframework:simple:4.1.21" // used by http package in envjs
 +    compile libraries.jetty // used by http package in envjs
-     compile project(':core'), project(":plugins")
+     compile project(':core'), project(":plugins"), project(':workers')
      compile libraries.inject
  
-diff --git a/subprojects/javascript/src/main/groovy/org/gradle/plugins/javascript/envjs/http/simple/SimpleHttpFileServerFactory.java b/subprojects/javascript/src/main/groovy/org/gradle/plugins/javascript/envjs/http/simple/SimpleHttpFileServerFactory.java
-index 8a4f692..6983db2 100644
---- a/subprojects/javascript/src/main/groovy/org/gradle/plugins/javascript/envjs/http/simple/SimpleHttpFileServerFactory.java
-+++ b/subprojects/javascript/src/main/groovy/org/gradle/plugins/javascript/envjs/http/simple/SimpleHttpFileServerFactory.java
+diff --git a/subprojects/javascript/src/main/java/org/gradle/plugins/javascript/envjs/http/simple/SimpleHttpFileServerFactory.java b/subprojects/javascript/src/main/java/org/gradle/plugins/javascript/envjs/http/simple/SimpleHttpFileServerFactory.java
+index 8a4f692cf4e..6983db21cb4 100644
+--- a/subprojects/javascript/src/main/java/org/gradle/plugins/javascript/envjs/http/simple/SimpleHttpFileServerFactory.java
++++ b/subprojects/javascript/src/main/java/org/gradle/plugins/javascript/envjs/http/simple/SimpleHttpFileServerFactory.java
 @@ -16,43 +16,43 @@
  
  package org.gradle.plugins.javascript.envjs.http.simple;
@@ -90,12 +111,12 @@ index 8a4f692..6983db2 100644
              throw new UncheckedIOException(e);
          }
      }
-diff --git a/subprojects/javascript/src/main/groovy/org/gradle/plugins/javascript/envjs/http/simple/internal/SimpleFileServerContainer.java b/subprojects/javascript/src/main/groovy/org/gradle/plugins/javascript/envjs/http/simple/internal/SimpleFileServerContainer.java
+diff --git a/subprojects/javascript/src/main/java/org/gradle/plugins/javascript/envjs/http/simple/internal/SimpleFileServerContainer.java b/subprojects/javascript/src/main/java/org/gradle/plugins/javascript/envjs/http/simple/internal/SimpleFileServerContainer.java
 deleted file mode 100644
-index 0f3e260..0000000
---- a/subprojects/javascript/src/main/groovy/org/gradle/plugins/javascript/envjs/http/simple/internal/SimpleFileServerContainer.java
+index 5d67baeeae1..00000000000
+--- a/subprojects/javascript/src/main/java/org/gradle/plugins/javascript/envjs/http/simple/internal/SimpleFileServerContainer.java
 +++ /dev/null
-@@ -1,75 +0,0 @@
+@@ -1,82 +0,0 @@
 -/*
 - * Copyright 2012 the original author or authors.
 - *
@@ -122,7 +143,13 @@ index 0f3e260..0000000
 -import org.simpleframework.http.resource.Context;
 -import org.simpleframework.http.resource.Index;
 -
--import java.io.*;
+-import java.io.File;
+-import java.io.FileInputStream;
+-import java.io.FileReader;
+-import java.io.IOException;
+-import java.io.InputStream;
+-import java.io.OutputStream;
+-import java.io.Reader;
 -import java.nio.charset.Charset;
 -
 -public class SimpleFileServerContainer implements Container {
@@ -139,6 +166,7 @@ index 0f3e260..0000000
 -
 -        if (!targetFile.exists()) {
 -            resp.setCode(404);
+-            resp.setText("Not Found");
 -            try {
 -                resp.getPrintStream().println(String.format("File '%s' does not exist", targetFile.getAbsolutePath()));
 -                resp.commit();
@@ -172,5 +200,5 @@ index 0f3e260..0000000
 -    }
 -}
 -- 
-2.1.0
+2.13.6
 

@@ -1,47 +1,48 @@
-From 65a9bbf9af98fa63eb1a52acac4401870d3b5a00 Mon Sep 17 00:00:00 2001
+From 01dbd63a77c9188e1ca02013c79f15c81272e80f Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Wed, 15 Oct 2014 14:23:30 +0200
-Subject: [PATCH 01/14] Gradle local mode
+Subject: [PATCH 01/16] Gradle local mode
 
 ---
  build.gradle                                         | 1 +
- buildSrc/build.gradle                                | 1 +
+ buildSrc/build.gradle                                | 3 +++
  subprojects/docs/docs.gradle                         | 1 +
  subprojects/docs/src/transforms/release-notes.gradle | 1 +
- subprojects/performance/performance.gradle           | 1 +
  subprojects/reporting/reporting.gradle               | 1 +
- 6 files changed, 6 insertions(+)
+ 5 files changed, 7 insertions(+)
 
 diff --git a/build.gradle b/build.gradle
-index 4b40e97..a6c4c03 100644
+index 45faed9098b..b4504db8f7c 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -127,6 +127,7 @@ allprojects {
-     group = 'org.gradle'
- 
-     repositories {
+@@ -193,6 +193,7 @@ allprojects {
+         maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+         maven { url 'https://repo.gradle.org/gradle/libs-milestones' }
+         maven { url "https://repo.gradle.org/gradle/libs-snapshots" }
 +        xmvn()
-         maven { url 'https://repo.gradle.org/gradle/libs' }
      }
- }
+ 
+     // patchExternalModules lives in the root project - we need to activate normalization there, too.
 diff --git a/buildSrc/build.gradle b/buildSrc/build.gradle
-index 9e03b4f..138b851 100644
+index b2eb858a3ce..e5b73f35ef5 100644
 --- a/buildSrc/build.gradle
 +++ b/buildSrc/build.gradle
-@@ -21,6 +21,7 @@ apply plugin: 'idea'
- apply plugin: 'eclipse'
- 
- repositories {
+@@ -25,6 +25,9 @@ repositories {
+     maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+     maven { url "https://repo.gradle.org/gradle/libs-snapshots" }
+     maven { url "https://plugins.gradle.org/m2/" }
 +    xmvn()
-     maven { url 'https://repo.gradle.org/gradle/libs' }
-     mavenCentral()
++    maven { url 'https://repo.gradle.org/gradle/libs' }
++    mavenCentral()
  }
+ 
+ dependencies {
 diff --git a/subprojects/docs/docs.gradle b/subprojects/docs/docs.gradle
-index b0b6ab2..4985b3b 100755
+index e876b265d16..5063c30e60e 100755
 --- a/subprojects/docs/docs.gradle
 +++ b/subprojects/docs/docs.gradle
-@@ -31,6 +31,7 @@ apply plugin: 'jsoup'
- apply plugin: 'javascript-base'
+@@ -41,6 +41,7 @@ apply plugin: 'javascript-base'
+ apply plugin: 'org.asciidoctor.convert'
  
  repositories {
 +    xmvn()
@@ -49,7 +50,7 @@ index b0b6ab2..4985b3b 100755
  
      ivy {
 diff --git a/subprojects/docs/src/transforms/release-notes.gradle b/subprojects/docs/src/transforms/release-notes.gradle
-index 627cd58..f1751c1 100644
+index c0c76884944..5aca84da33d 100644
 --- a/subprojects/docs/src/transforms/release-notes.gradle
 +++ b/subprojects/docs/src/transforms/release-notes.gradle
 @@ -1,5 +1,6 @@
@@ -59,10 +60,10 @@ index 627cd58..f1751c1 100644
          mavenCentral()
      }
      dependencies {
-diff --git a/subprojects/performance/performance.gradle b/subprojects/performance/performance.gradle
-index 1945006..090013a 100644
---- a/subprojects/performance/performance.gradle
-+++ b/subprojects/performance/performance.gradle
+diff --git a/subprojects/reporting/reporting.gradle b/subprojects/reporting/reporting.gradle
+index a467c71be4d..92981631cb8 100644
+--- a/subprojects/reporting/reporting.gradle
++++ b/subprojects/reporting/reporting.gradle
 @@ -7,6 +7,7 @@ configurations {
  }
  
@@ -71,18 +72,6 @@ index 1945006..090013a 100644
      javaScript.googleApis()
  }
  
-diff --git a/subprojects/reporting/reporting.gradle b/subprojects/reporting/reporting.gradle
-index ad0c7c2..87cbf3b 100644
---- a/subprojects/reporting/reporting.gradle
-+++ b/subprojects/reporting/reporting.gradle
-@@ -5,6 +5,7 @@ configurations {
- }
- 
- repositories {
-+    xmvn()
-     javaScript.googleApis()
- }
- 
 -- 
-2.1.0
+2.13.6
 

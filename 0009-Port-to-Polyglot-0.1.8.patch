@@ -1,19 +1,19 @@
-From ed5e1b79063bd70377cdfae2fcb71912a50d1c16 Mon Sep 17 00:00:00 2001
+From afd73f1474ee8c64eb386a3eda4859fe9e62b164 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Tue, 21 Apr 2015 15:12:44 +0200
-Subject: [PATCH 09/15] Port to Polyglot 0.1.8
+Subject: [PATCH 09/16] Port to Polyglot 0.1.8
 
 ---
  .../maven/internal/pom/CustomModelBuilder.java          | 17 ++++++++++-------
  1 file changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/CustomModelBuilder.java b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/pom/CustomModelBuilder.java
-index e311d49..91d5fa2 100644
---- a/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/CustomModelBuilder.java
-+++ b/subprojects/maven/src/main/groovy/org/gradle/api/publication/maven/internal/CustomModelBuilder.java
+diff --git a/subprojects/maven/src/main/java/org/gradle/api/publication/maven/internal/pom/CustomModelBuilder.java b/subprojects/maven/src/main/java/org/gradle/api/publication/maven/internal/pom/CustomModelBuilder.java
+index e311d4993b6..91d5fa22d95 100644
+--- a/subprojects/maven/src/main/java/org/gradle/api/publication/maven/internal/pom/CustomModelBuilder.java
++++ b/subprojects/maven/src/main/java/org/gradle/api/publication/maven/internal/pom/CustomModelBuilder.java
 @@ -20,11 +20,15 @@ import org.apache.maven.model.Model;
  import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
- import org.gradle.api.internal.artifacts.PlexusLoggerAdapter;
+ import org.gradle.api.publication.maven.internal.ModelFactory;
  import org.slf4j.LoggerFactory;
 +import org.sonatype.maven.polyglot.PolyglotModelManager;
  import org.sonatype.maven.polyglot.execute.ExecuteManager;
@@ -52,5 +52,5 @@ index e311d49..91d5fa2 100644
          factories.remove("project");
          ModelFactory modelFactory = new ModelFactory(model);
 -- 
-2.5.5
+2.13.6
 

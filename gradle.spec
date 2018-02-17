@@ -1,4 +1,3 @@
-%{?_javapackages_macros:%_javapackages_macros}
 # Gradle depends on itself for building.  This can be problematic, for
 # example when some library it uses changes API, Gradle may stop
 # working and it may be impossible to rebuild it in normal way.
@@ -10,13 +9,12 @@
 # doesn't provide Maven metadata, and it may have some functionality
 # missing.  For this reason a normal non-bootstrap build should be
 # done immediately after Gradle is bootstrapped.
-%bcond_with bootstrap
+%bcond_without bootstrap
 
 Name:           gradle
-Version:        2.2.1
-Release:        0.3 #6%{?dist}
+Version:        4.3.1
+Release:        2%{?with_bootstrap:.boot}.1
 Summary:        Build automation tool
-Group:          Development/Java
 # Some examples and integration tests are under GNU LGPL and Boost
 # Software License, but are not used to create binary package.
 License:        ASL 2.0
@@ -29,127 +27,128 @@ Source2:        gradle-font-metadata.xml
 Source3:        gradle-jquery-metadata.xml
 Source4:        gradle-launcher.sh
 Source5:        gradle.desktop
+Source6:        gradle-man.txt
 
 # Sources 99xx are used only for bootstrapping.
 # Main script used to build gradle with plain groovyc
 Source9900:     gradle-bootstrap.sh
 # Script used to generate Source991x from upstream binaries
-Source9901:     gradle-bootstrap-gererate-resources.py
+Source9901:     gradle-bootstrap-generate-resources.py
 # Files containing information about Gradle module structure
 Source9910:     gradle-bootstrap-module-list
 Source9911:     gradle-bootstrap-module-dependencies
+# List of API mappings, extracted from gradle-docs.jar
+Source9920:     gradle-bootstrap-api-mapping.txt
 # List of default imorts, extracted from gradle-docs.jar
-Source9920:     gradle-bootstrap-default-imports.txt
+Source9921:     gradle-bootstrap-default-imports.txt
 # List of Gradle plugins, extracted from gradle-core.jar
-Source9921:     gradle-bootstrap-plugin.properties
+Source9922:     gradle-bootstrap-plugin.properties
+Source9923:     gradle-bootstrap-implementation-plugin.properties
+Source9924:     gradle-bootstrap-api-relocated.txt
+Source9925:     gradle-bootstrap-test-kit-relocated.txt
 
-Patch0:         0001-Gradle-local-mode.patch
-Patch1:         0002-Use-Maven-Wagon-2.8.patch
-Patch2:         0003-Use-bndlib-1.50.0.patch
-Patch3:         0004-Port-to-Jetty-9.patch
-Patch4:         0005-Use-jansi-1.11.patch
-Patch5:         0006-Port-to-Maven-3.1.1-and-Aether-Ant-Tasks.patch
-Patch6:         0007-Remove-Class-Path-from-manifest.patch
-Patch7:         0008-Implement-XMvn-repository-factory-method.patch
-# Forwarded upstream: https://github.com/gradle/gradle/pull/354
-Patch8:         0009-Use-hostname-command-as-fallback-way-of-getting-buil.patch
-# TODO: forward upstream
-Patch9:         0010-Compatibility-with-Guava-18.0.patch
-Patch10:        0011-Add-build-dependency-on-ASM-5.0.3.patch
-Patch11:        0012-Port-from-Simple-4-to-Jetty-9.patch
-Patch12:        0013-Use-unversioned-dependency-JAR-names.patch
-Patch13:        0014-Don-t-declare-dependency-on-jarjars.patch
+Patch0001:      0001-Gradle-local-mode.patch
+Patch0002:      0002-Remove-Class-Path-from-manifest.patch
+Patch0003:      0003-Implement-XMvn-repository-factory-method.patch
+Patch0004:      0004-Use-unversioned-dependency-JAR-names.patch
+Patch0005:      0005-Port-to-Maven-3.3.9-and-Eclipse-Aether.patch
+Patch0006:      0006-Disable-code-quality-checks.patch
+Patch0007:      0007-Port-to-Kryo-3.0.patch
+Patch0008:      0008-Port-to-Ivy-2.4.0.patch
+Patch0009:      0009-Port-to-Polyglot-0.1.8.patch
+Patch0010:      0010-Port-from-Simple-4-to-Jetty-9.patch
+Patch0011:      0011-Disable-benchmarks.patch
+Patch0012:      0012-Disable-patching-of-external-modules.patch
+Patch0013:      0013-Add-missing-transitive-dependencies.patch
+Patch0014:      0014-Disable-ideNative-module.patch
+Patch0015:      0015-Disable-docs-build.patch
+Patch0016:      0016-Port-to-guava-20.0.patch
 
-# from gradle-2.13-7.fc26
-Patch100:       0009-Port-to-Polyglot-0.1.8.patch
-Patch101:       0011-Port-to-Kryo-3.0.patch
+# For autosetup
+BuildRequires:  git
 
 # Dependencies on build system used.  In bootstrap mode we use plain
 # groovyc to compile Gradle, otherwise Gradle is built with itself.
 %if %{with bootstrap}
-BuildRequires:  groovy #>= 2.3
+BuildRequires:  groovy >= 2.3
 BuildRequires:  javapackages-local
 %else
-BuildRequires:  gradle-local >= 2.2
+BuildRequires:  gradle-local
 %endif
 
 # Generic build dependencies
 BuildRequires:  desktop-file-utils
 BuildRequires:  hostname
+BuildRequires:  procps-ng
+
+# manpage build dependencies
+BuildRequires:  asciidoc
+BuildRequires:  xmlto
 
 # Artifacts required for Gradle build
 BuildRequires:  mvn(antlr:antlr)
-BuildRequires:  mvn(asm:asm)
-BuildRequires:  mvn(asm:asm-tree)
-BuildRequires:  mvn(biz.aQute:bndlib)
-BuildRequires:  mvn(biz.source_code:base64coder)
-BuildRequires:  mvn(bsf:bsf)
-BuildRequires:  mvn(cglib:cglib)
-BuildRequires:  mvn(cglib:cglib-nodep)
+BuildRequires:  mvn(biz.aQute.bnd:bndlib)
+BuildRequires:  mvn(bsh:bsh)
 BuildRequires:  mvn(ch.qos.logback:logback-classic)
 BuildRequires:  mvn(ch.qos.logback:logback-core)
+BuildRequires:  mvn(com.amazonaws:aws-java-sdk-core)
+BuildRequires:  mvn(com.amazonaws:aws-java-sdk-kms)
+BuildRequires:  mvn(com.amazonaws:aws-java-sdk-s3)
 BuildRequires:  mvn(com.beust:jcommander)
 BuildRequires:  mvn(com.esotericsoftware.kryo:kryo)
-BuildRequires:  mvn(com.esotericsoftware.minlog:minlog)
-BuildRequires:  mvn(com.esotericsoftware.reflectasm:reflectasm)
+BuildRequires:  mvn(com.esotericsoftware:minlog)
+BuildRequires:  mvn(com.esotericsoftware:reflectasm)
+BuildRequires:  mvn(com.fasterxml.jackson.core:jackson-annotations)
+BuildRequires:  mvn(com.fasterxml.jackson.core:jackson-core)
+BuildRequires:  mvn(com.fasterxml.jackson.core:jackson-databind)
 BuildRequires:  mvn(com.google.code.findbugs:findbugs)
 BuildRequires:  mvn(com.google.code.findbugs:jsr305)
 BuildRequires:  mvn(com.google.code.gson:gson)
-BuildRequires:  mvn(com.googlecode.jarjar:jarjar)
-BuildRequires:  mvn(com.googlecode.jatl:jatl)
 BuildRequires:  mvn(com.google.guava:guava)
 BuildRequires:  mvn(com.google.guava:guava-jdk5)
+BuildRequires:  mvn(com.google.http-client:google-http-client)
+BuildRequires:  mvn(com.google.oauth-client:google-oauth-client)
+BuildRequires:  mvn(com.googlecode.jarjar:jarjar)
+BuildRequires:  mvn(com.googlecode.jatl:jatl)
 BuildRequires:  mvn(com.jcraft:jsch)
-BuildRequires:  mvn(com.jcraft:jzlib)
-BuildRequires:  mvn(commons-beanutils:commons-beanutils-core)
+BuildRequires:  mvn(com.puppycrawl.tools:checkstyle)
+BuildRequires:  mvn(com.sun:tools)
+BuildRequires:  mvn(com.typesafe.zinc:zinc)
+BuildRequires:  mvn(com.uwyn:jhighlight)
+BuildRequires:  mvn(commons-beanutils:commons-beanutils)
 BuildRequires:  mvn(commons-cli:commons-cli)
 BuildRequires:  mvn(commons-codec:commons-codec)
 BuildRequires:  mvn(commons-collections:commons-collections)
 BuildRequires:  mvn(commons-configuration:commons-configuration)
 BuildRequires:  mvn(commons-io:commons-io)
 BuildRequires:  mvn(commons-lang:commons-lang)
-BuildRequires:  mvn(commons-logging:commons-logging)
-BuildRequires:  mvn(com.puppycrawl.tools:checkstyle)
-BuildRequires:  mvn(com.sun:tools)
-BuildRequires:  mvn(com.thoughtworks.qdox:qdox)
-BuildRequires:  mvn(com.thoughtworks.xstream:xstream)
-BuildRequires:  mvn(com.uwyn:jhighlight)
 BuildRequires:  mvn(dom4j:dom4j)
-BuildRequires:  mvn(isorelax:isorelax)
 BuildRequires:  mvn(javax.inject:javax.inject)
-BuildRequires:  mvn(javax.mail:mail)
 BuildRequires:  mvn(javax.servlet:javax.servlet-api)
-BuildRequires:  mvn(javax.xml.stream:stax-api)
 BuildRequires:  mvn(jaxen:jaxen)
-BuildRequires:  mvn(jdom:jdom)
 BuildRequires:  mvn(jline:jline)
 BuildRequires:  mvn(joda-time:joda-time)
 BuildRequires:  mvn(junit:junit)
-BuildRequires:  mvn(log4j:log4j)
 BuildRequires:  mvn(net.java.dev.jna:jna)
-BuildRequires:  mvn(net.java.dev.msv:msv-core)
-BuildRequires:  mvn(net.java.dev.msv:xsdlib)
 BuildRequires:  mvn(net.jcip:jcip-annotations)
 BuildRequires:  mvn(net.rubygrapefruit:native-platform)
-BuildRequires:  mvn(net.sf.kxml:kxml2)
-BuildRequires:  mvn(net.sf.kxml:kxml2-min)
-BuildRequires:  mvn(net.sourceforge.cobertura:cobertura)
 BuildRequires:  mvn(net.sourceforge.nekohtml:nekohtml)
+BuildRequires:  mvn(org.antlr:antlr4-runtime)
 BuildRequires:  mvn(org.apache.ant:ant)
-BuildRequires:  mvn(org.apache.ant:ant-antlr)
-BuildRequires:  mvn(org.apache.ant:ant-junit)
 BuildRequires:  mvn(org.apache.ant:ant-launcher)
-BuildRequires:  mvn(org.apache.ant:ant-parent:pom:)
-BuildRequires:  mvn(org.apache:apache:pom:)
-BuildRequires:  mvn(org.apache.commons:commons-parent:pom:)
-BuildRequires:  mvn(org.apache.felix:org.osgi.core)
+BuildRequires:  mvn(org.apache.commons:commons-compress)
+BuildRequires:  mvn(org.apache.commons:commons-lang3)
 BuildRequires:  mvn(org.apache.geronimo.specs:geronimo-annotation_1.0_spec)
-BuildRequires:  mvn(org.apache.geronimo.specs:geronimo-jms_1.1_spec)
 BuildRequires:  mvn(org.apache.httpcomponents:httpclient)
 BuildRequires:  mvn(org.apache.httpcomponents:httpcore)
 BuildRequires:  mvn(org.apache.ivy:ivy)
+BuildRequires:  mvn(org.apache.maven.wagon:wagon-file)
+BuildRequires:  mvn(org.apache.maven.wagon:wagon-http)
+BuildRequires:  mvn(org.apache.maven.wagon:wagon-http-shared)
+BuildRequires:  mvn(org.apache.maven.wagon:wagon-provider-api)
 BuildRequires:  mvn(org.apache.maven:maven-aether-provider)
 BuildRequires:  mvn(org.apache.maven:maven-artifact)
+BuildRequires:  mvn(org.apache.maven:maven-builder-support)
 BuildRequires:  mvn(org.apache.maven:maven-compat)
 BuildRequires:  mvn(org.apache.maven:maven-core)
 BuildRequires:  mvn(org.apache.maven:maven-model)
@@ -158,39 +157,24 @@ BuildRequires:  mvn(org.apache.maven:maven-plugin-api)
 BuildRequires:  mvn(org.apache.maven:maven-repository-metadata)
 BuildRequires:  mvn(org.apache.maven:maven-settings)
 BuildRequires:  mvn(org.apache.maven:maven-settings-builder)
-BuildRequires:  mvn(org.apache.maven.wagon:wagon-http)
-BuildRequires:  mvn(org.apache.maven.wagon:wagon-http-shared)
-BuildRequires:  mvn(org.apache.maven.wagon:wagon-provider-api)
-BuildRequires:  mvn(org.apache.tomcat:tomcat-servlet-api)
 BuildRequires:  mvn(org.apache.xbean:xbean-reflect)
-BuildRequires:  mvn(org.beanshell:bsh)
-BuildRequires:  mvn(org.bouncycastle:bcpg-jdk15)
-BuildRequires:  mvn(org.bouncycastle:bcprov-jdk15)
-BuildRequires:  mvn(org.codehaus.gpars:gpars)
-BuildRequires:  mvn(org.codehaus.groovy:groovy)
+BuildRequires:  mvn(org.apache:apache:pom:)
+BuildRequires:  mvn(org.bouncycastle:bcpg-jdk15on)
+BuildRequires:  mvn(org.bouncycastle:bcprov-jdk15on)
+BuildRequires:  mvn(org.codehaus.groovy.modules.http-builder:http-builder)
 BuildRequires:  mvn(org.codehaus.groovy:groovy-all)
-BuildRequires:  mvn(org.codehaus.jcsp:jcsp)
-BuildRequires:  mvn(org.codehaus.jettison:jettison)
-BuildRequires:  mvn(org.codehaus.jsr166-mirror:extra166y)
 BuildRequires:  mvn(org.codehaus.plexus:plexus-classworlds)
 BuildRequires:  mvn(org.codehaus.plexus:plexus-component-annotations)
-BuildRequires:  mvn(org.codehaus.plexus:plexus-container-default)
 BuildRequires:  mvn(org.codehaus.plexus:plexus-interpolation)
 BuildRequires:  mvn(org.codehaus.plexus:plexus-utils)
 BuildRequires:  mvn(org.codehaus.sonar:sonar-batch)
 BuildRequires:  mvn(org.codehaus.sonar:sonar-batch-bootstrapper)
 BuildRequires:  mvn(org.codehaus.sonar:sonar-plugin-api)
-BuildRequires:  mvn(org.codehaus.woodstox:stax2-api)
-BuildRequires:  mvn(org.codehaus.woodstox:woodstox-core-asl)
 BuildRequires:  mvn(org.codenarc:CodeNarc)
-BuildRequires:  mvn(org.eclipse.aether:aether-ant-tasks)
 BuildRequires:  mvn(org.eclipse.aether:aether-api)
 BuildRequires:  mvn(org.eclipse.aether:aether-connector-basic)
 BuildRequires:  mvn(org.eclipse.aether:aether-impl)
 BuildRequires:  mvn(org.eclipse.aether:aether-spi)
-BuildRequires:  mvn(org.eclipse.aether:aether-transport-classpath)
-BuildRequires:  mvn(org.eclipse.aether:aether-transport-file)
-BuildRequires:  mvn(org.eclipse.aether:aether-transport-http)
 BuildRequires:  mvn(org.eclipse.aether:aether-transport-wagon)
 BuildRequires:  mvn(org.eclipse.aether:aether-util)
 BuildRequires:  mvn(org.eclipse.jdt:core)
@@ -203,27 +187,16 @@ BuildRequires:  mvn(org.eclipse.jetty:jetty-servlet)
 BuildRequires:  mvn(org.eclipse.jetty:jetty-util)
 BuildRequires:  mvn(org.eclipse.jetty:jetty-webapp)
 BuildRequires:  mvn(org.eclipse.jetty:jetty-xml)
+BuildRequires:  mvn(org.eclipse.sisu:org.eclipse.sisu.inject)
 BuildRequires:  mvn(org.eclipse.sisu:org.eclipse.sisu.plexus)
 BuildRequires:  mvn(org.fusesource.hawtjni:hawtjni-runtime)
 BuildRequires:  mvn(org.fusesource.jansi:jansi)
 BuildRequires:  mvn(org.fusesource.jansi:jansi-native)
 BuildRequires:  mvn(org.gmetrics:GMetrics)
-BuildRequires:  mvn(org.gradle.jarjar:jarjar)
-BuildRequires:  mvn(org.hamcrest:hamcrest-core)
-BuildRequires:  mvn(org.hamcrest:hamcrest-parent:pom:)
-BuildRequires:  mvn(org.jboss.netty:netty:3)
-BuildRequires:  mvn(org.jdom:jdom)
-BuildRequires:  mvn(org.jdom:jdom2)
-BuildRequires:  mvn(org.joda:joda-convert)
 BuildRequires:  mvn(org.jsoup:jsoup)
 BuildRequires:  mvn(org.mozilla:rhino)
-BuildRequires:  mvn(org.multiverse:multiverse-core)
 BuildRequires:  mvn(org.objenesis:objenesis)
-BuildRequires:  mvn(org.ow2.asm:asm)
 BuildRequires:  mvn(org.ow2.asm:asm-all)
-BuildRequires:  mvn(org.ow2.asm:asm-analysis)
-BuildRequires:  mvn(org.ow2.asm:asm-tree)
-BuildRequires:  mvn(org.ow2.asm:asm-util)
 BuildRequires:  mvn(org.parboiled:parboiled-core)
 BuildRequires:  mvn(org.parboiled:parboiled-java)
 BuildRequires:  mvn(org.pegdown:pegdown)
@@ -237,157 +210,106 @@ BuildRequires:  mvn(org.sonatype.plexus:plexus-cipher)
 BuildRequires:  mvn(org.sonatype.plexus:plexus-sec-dispatcher)
 BuildRequires:  mvn(org.sonatype.pmaven:pmaven-common)
 BuildRequires:  mvn(org.sonatype.pmaven:pmaven-groovy)
-BuildRequires:  mvn(org.spockframework:spock-core)
 BuildRequires:  mvn(org.testng:testng)
-BuildRequires:  mvn(org.yaml:snakeyaml)
-BuildRequires:  mvn(oro:oro)
-BuildRequires:  mvn(relaxngDatatype:relaxngDatatype)
-BuildRequires:  mvn(stax:stax)
-BuildRequires:  mvn(stax:stax-api)
-BuildRequires:  mvn(xalan:serializer)
-BuildRequires:  mvn(xalan:xalan)
 BuildRequires:  mvn(xerces:xercesImpl)
 BuildRequires:  mvn(xml-apis:xml-apis)
-BuildRequires:  mvn(xml-resolver:xml-resolver)
-BuildRequires:  mvn(xom:xom)
 
 # Artifacts required for Gradle build which don't have Maven metadata
 # and thus no mvn provides.
-BuildRequires:  fonts-ttf-lato
-BuildRequires:  fonts-ttf-liberation
-#BuildRequires:  js-jquery
+BuildRequires:  lato-fonts
+BuildRequires:  liberation-mono-fonts
+BuildRequires:  js-jquery
 
 # Generic runtime dependencies.
 Requires:       javapackages-tools
-Requires:       java-devel
 Requires:       bash
 Requires:       hicolor-icon-theme
 
+# Theoretically Gradle might be usable with just JRE, but typical Gradle
+# workflow requires full JDK, so we recommend it here.
+Recommends:     java-devel
+
 # Providers of symlinks in Gradle lib/ directory. Generated with:
 # for l in $(find /usr/share/gradle -type l); do rpm -qf --qf 'Requires:       %{name}\n' $(readlink $l); done | sort -u | grep -v gradle
-Requires:       aether-ant-tasks
-Requires:       aether-api
-Requires:       aether-connector-basic
-Requires:       aether-impl
-Requires:       aether-spi
-Requires:       aether-transport-classpath
-Requires:       aether-transport-file
-Requires:       aether-transport-http
-Requires:       aether-transport-wagon
-Requires:       aether-util
-Requires:       ant
-Requires:       ant-antlr
-Requires:       ant-junit
-Requires:       antlr-tool
+Requires:       ant-lib
 Requires:       apache-commons-cli
 Requires:       apache-commons-codec
 Requires:       apache-commons-collections
+Requires:       apache-commons-compress
 Requires:       apache-commons-io
 Requires:       apache-commons-lang
-Requires:       apache-commons-logging
+Requires:       apache-commons-lang3
 Requires:       apache-ivy
 Requires:       aqute-bndlib
 Requires:       atinject
+Requires:       aws-sdk-java-core
+Requires:       aws-sdk-java-kms
+Requires:       aws-sdk-java-s3
 Requires:       base64coder
-Requires:       bea-stax
-Requires:       bea-stax-api
 Requires:       beust-jcommander
 Requires:       bouncycastle
 Requires:       bouncycastle-pg
-Requires:       bsf
-Requires:       bsh
-Requires:       cglib
-Requires:       dom4j
 Requires:       ecj
-Requires:       extra166y
-Requires:       felix-osgi-core
-Requires:       geronimo-annotation
-Requires:       geronimo-jms
 Requires:       glassfish-servlet-api
 Requires:       google-gson
-Requires:       gpars
+Requires:       google-guice
 Requires:       groovy-lib
 Requires:       guava
-Requires:       hamcrest
-Requires:       hawtjni
+Requires:       hawtjni-runtime
 Requires:       httpcomponents-client
 Requires:       httpcomponents-core
-Requires:       isorelax
+Requires:       jackson-annotations
+Requires:       jackson-core
+Requires:       jackson-databind
 Requires:       jansi
 Requires:       jansi-native
-Requires:       jarjar
 Requires:       jatl
-Requires:       javamail
-Requires:       jaxen
 Requires:       jcifs
 Requires:       jcip-annotations
 Requires:       jcl-over-slf4j
-Requires:       jcsp
-Requires:       jdom
-Requires:       jdom2
-Requires:       jettison
-Requires:       jetty-annotations
-Requires:       jetty-jsp
-Requires:       jetty-plus
-Requires:       jetty-security
 Requires:       jetty-server
-Requires:       jetty-servlet
 Requires:       jetty-util
-Requires:       jetty-webapp
-Requires:       jetty-xml
-Requires:       jline
-Requires:       jna
-Requires:       joda-convert
 Requires:       joda-time
 Requires:       jsch
+Requires:       jsr-305
 Requires:       jul-to-slf4j
 Requires:       junit
-Requires:       jzlib
 Requires:       kryo
-Requires:       kxml
-Requires:       log4j12
 Requires:       log4j-over-slf4j
-Requires:       logback
-Requires:       maven
+Requires:       maven-lib
+Requires:       maven-resolver-api
+Requires:       maven-resolver-connector-basic
+Requires:       maven-resolver-impl
+Requires:       maven-resolver-spi
+Requires:       maven-resolver-transport-wagon
+Requires:       maven-resolver-util
+Requires:       maven-wagon-file
 Requires:       maven-wagon-http
 Requires:       maven-wagon-http-shared
 Requires:       maven-wagon-provider-api
 Requires:       minlog
-Requires:       msv-msv
-Requires:       msv-xsdlib
-Requires:       multiverse
 Requires:       native-platform
 Requires:       nekohtml
-Requires:       netty3
 Requires:       objectweb-asm
 Requires:       objenesis
 Requires:       plexus-cipher
 Requires:       plexus-classworlds
 Requires:       plexus-containers-component-annotations
-Requires:       plexus-containers-container-default
 Requires:       plexus-interpolation
 Requires:       plexus-sec-dispatcher
 Requires:       plexus-utils
-Requires:       qdox
 Requires:       reflectasm
-Requires:       relaxngDatatype
 Requires:       rhino
+Requires:       sisu-inject
 Requires:       sisu-plexus
 Requires:       slf4j
 Requires:       snakeyaml
-Requires:       sonar-batch-bootstrapper
-Requires:       stax2-api
 Requires:       tesla-polyglot-common
 Requires:       tesla-polyglot-groovy
 Requires:       testng
-Requires:       woodstox-core
-Requires:       xalan-j2
 Requires:       xbean
 Requires:       xerces-j2
 Requires:       xml-commons-apis
-Requires:       xml-commons-resolver
-Requires:       xom
-Requires:       xstream
 
 %description
 Gradle is build automation evolved. Gradle can automate the building,
@@ -404,37 +326,20 @@ choice for many open source projects, leading edge enterprises and
 legacy automation challenges.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-
-%patch100 -p1 -b.orig
-%patch101 -p1 -b.orig
+%autosetup -S git
 
 # Remove bundled wrapper JAR
 rm -rf gradle/wrapper/
 # Remove bundled JavaScript
-#>subprojects/diagnostics/src/main/resources/org/gradle/api/tasks/diagnostics/htmldependencyreport/jquery.jstree.js
-
-# Remove Zinc support as Zinc is not yet packaged for Fedora
-rm -f $(find -name ZincScalaCompiler.java)
-sed -i /zinc/d subprojects/scala/scala.gradle
+>subprojects/diagnostics/src/main/resources/org/gradle/api/tasks/diagnostics/htmldependencyreport/jquery.jstree.js
 
 # This file is normally downloaded from Internet during package build
 mkdir -p build
 cp %{SOURCE1} build/all-released-versions.json
+
+# quality checks for which we don't have deps
+rm -r buildSrc/src/main/groovy/org/gradle/binarycompatibility
+rm buildSrc/src/main/groovy/org/gradle/build/docs/CacheableAsciidoctorTask.groovy
 
 # jquery and fonts don't have Maven metadata
 %mvn_config resolverSettings/metadataRepositories/repository %{SOURCE2}
@@ -444,78 +349,68 @@ cp %{SOURCE1} build/all-released-versions.json
 # TODO: enble tests
 rm -rf buildSrc/src/test
 
-# Compilation with Fedora versions of some librarios produces
+# Compilation with Fedora versions of some libraries produces
 # warnings. Lets not treat them as errors to make the build work.
 sed -i 's/"-Werror" <<//' gradle/strictCompile.gradle
 
-# Generate Maven metadata for gradle-dependency-management
-# (required by XMvn connector).
-sed -i "/publishedProjects =/s/.*/& project(':dependencyManagement'),/" build.gradle
-
+removeProject() {
+sed -i "/'$1'/d" settings.gradle
+sed -i "s/'$1',\?//" build.gradle
+}
+removeProject resourcesGcs
+rm -r subprojects/resources-gcs
+rm -r subprojects/ide-native
 
 %build
 %if %{with bootstrap}
-mkdir -p subprojects/docs/src/main/resources && cp %{SOURCE9920} subprojects/docs/src/main/resources/default-imports.txt
-cp %{SOURCE9921} subprojects/core/src/main/resources/gradle-plugins.properties
-sh %{SOURCE9900} %{SOURCE9910} %{SOURCE9911}
+mkdir -p subprojects/docs/src/main/resources
+mkdir -p subprojects/core/src/main/resources/org/gradle/api/internal/runtimeshaded
+cp %{SOURCE9920} subprojects/docs/src/main/resources/api-mapping.txt
+cp %{SOURCE9921} subprojects/docs/src/main/resources/default-imports.txt
+cp %{SOURCE9922} subprojects/core/src/main/resources/gradle-plugins.properties
+cp %{SOURCE9923} subprojects/core/src/main/resources/gradle-implementation-plugins.properties
+cp %{SOURCE9924} subprojects/core/src/main/resources/org/gradle/api/internal/runtimeshaded/api-relocated.txt
+cp %{SOURCE9925} subprojects/core/src/main/resources/org/gradle/api/internal/runtimeshaded/test-kit-relocated.txt
+%{SOURCE9900} %{SOURCE9910} %{SOURCE9911}
 %else
-gradle -x docs:distDocs --offline -s install -Pgradle_installPath=$PWD/inst \
+# Disables parallel build and daemon mode
+rm gradle.properties
+gradle-local --offline --no-daemon install xmvnInstall \
+    -Pgradle_installPath=$PWD/inst \
     -PfinalRelease -Dbuild.number="%{?fedora:Fedora }%{?rhel:Red Hat }%{version}-%{release}"
 %endif
 
+# manpage build
+mkdir man
+asciidoc -b docbook -d manpage -o man/gradle.xml %{SOURCE6}
+xmlto man man/gradle.xml -o man
+
 %install
+cp subprojects/distributions/src/toplevel/NOTICE .
+cp subprojects/docs/src/samples/application/src/dist/LICENSE .
+
 install -d -m 755 %{buildroot}%{_javadir}/%{name}/
 
 %if %{with bootstrap}
 cp -r bootstrap-home %{buildroot}%{_datadir}/%{name}
 # Launcher with dependencies needs to be in _javadir
-for mod in launcher core base-services; do
-    ln -s %{_datadir}/%{name}/lib/gradle-$mod.jar %{buildroot}%{_javadir}/%{name}/gradle-$mod.jar
-done
 # Dependencies of xmvn-connector-gradle need to have Maven metadata
-for mod in base-services core dependency-management resources; do
-    %add_maven_depmap org.gradle:gradle-$mod:%{version} ../%{name}/lib/gradle-$mod.jar
+for mod in launcher base-services core core-api dependency-management resources \
+        logging base-services-groovy model-core; do
+    %mvn_file ":{gradle-$mod}" %{name}/@1 %{_datadir}/lib/@1
+    %mvn_artifact org.gradle:gradle-$mod:%{version} bootstrap-home/lib/gradle-$mod.jar
 done
-cp subprojects/distributions/src/toplevel/{changelog.txt,LICENSE,NOTICE} .
-%else
 
-repo=$HOME/.m2/repository
+%else # non-bootstrap
 
-install -d -m 755 %{buildroot}%{_datadir}/%{name}/
 rm -rf inst/bin/gradle.bat inst/media
 ln -sf %{_bindir}/%{name} inst/bin/gradle
-mv inst/{changelog.txt,LICENSE,NOTICE} .
-find inst/lib -type f -not -name 'gradle*' -delete
-cp -a deps/* inst/lib/
-cp -a inst/* %{buildroot}%{_datadir}/%{name}/
-
-for f in gradle-base-services gradle-base-services-groovy gradle-cli gradle-core gradle-docs \
-         gradle-launcher gradle-messaging gradle-model-core gradle-model-groovy gradle-native \
-         gradle-open-api gradle-resources gradle-tooling-api gradle-ui gradle-wrapper \
-         plugins/gradle-announce plugins/gradle-antlr plugins/gradle-build-comparison \
-         plugins/gradle-build-init plugins/gradle-code-quality plugins/gradle-cunit \
-         plugins/gradle-dependency-management plugins/gradle-diagnostics plugins/gradle-ear \
-         plugins/gradle-ide plugins/gradle-ide-native plugins/gradle-ivy plugins/gradle-jacoco \
-         plugins/gradle-javascript plugins/gradle-jetty plugins/gradle-language-groovy \
-         plugins/gradle-language-java plugins/gradle-language-jvm plugins/gradle-language-native \
-         plugins/gradle-maven plugins/gradle-osgi plugins/gradle-platform-base \
-         plugins/gradle-platform-jvm plugins/gradle-platform-native plugins/gradle-plugin-development \
-         plugins/gradle-plugins plugins/gradle-plugin-use plugins/gradle-publish plugins/gradle-reporting \
-         plugins/gradle-resources-http plugins/gradle-scala plugins/gradle-signing plugins/gradle-sonar
-do
-    mod=$(basename $f)
-    pom=$repo/org/gradle/$mod/%{version}*/$mod-%{version}*.pom
-    jar=$repo/org/gradle/$mod/%{version}*/$mod-%{version}*.jar
-    if [ -f $jar ]; then
-        # Gradle JAR that has Maven metadata
-        %mvn_artifact $pom $jar
-    else
-        # Gradle JAR without Maven metadata (most of internal Gradle
-        # JARs are not published in remote repositories)
-        cp %{buildroot}%{_datadir}/%{name}/lib/$f-%{version}*.jar %{buildroot}%{_javadir}/%{name}/$mod.jar
-    fi
-    ln -sf %{_javadir}/%{name}/$mod.jar %{buildroot}%{_datadir}/%{name}/lib/$f-%{version}*.jar
-done
+find inst/lib -type f -name 'gradle*' | sed 's:.*/\(gradle-.*\)-%{version}.*:ln -sf %{_javadir}/%{name}/\1.jar &:' | bash -x
+ln -sf $(build-classpath ecj) inst/lib/plugins/ecj.jar
+xmvn-subst -s $(find inst/lib -type f)
+# TODO figure out why this one is missing
+ln -s `find-jar commons-lang` inst/lib/
+cp -a inst %{buildroot}%{_datadir}/%{name}
 
 %endif
 
@@ -532,30 +427,178 @@ for r in 16 24 32 48 64 128 256; do
         %{buildroot}%{_datadir}/icons/hicolor/${r}x${r}/apps/%{name}.png
 done
 
-%post
-update-desktop-database &>/dev/null || :
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-update-desktop-database &>/dev/null || :
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+install -d -m 755 %{buildroot}%{_mandir}/man1/
+install -p -m 644 man/gradle.1 %{buildroot}%{_mandir}/man1/gradle.1
 
 %files -f .mfiles
 %{_bindir}/%{name}
 %{_datadir}/%{name}
-%{_javadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-%doc changelog.txt
-%doc LICENSE NOTICE
+%{_mandir}/man1/gradle.1*
+%license LICENSE NOTICE
 
 %changelog
+* Thu Jan 11 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 4.3.1-2
+- Remove obsolete scriptlets
+
+* Mon Nov 13 2017 Michael Simacek <msimacek@redhat.com> - 4.3.1-1
+- Non-bootstrap build
+
+* Fri Nov 10 2017 Michael Simacek <msimacek@redhat.com> - 4.3.1-0.1.boot
+- Update to upstream version 4.3.1
+
+* Mon Oct 16 2017 Michael Simacek <msimacek@redhat.com> - 4.2.1-2
+- Disable parallel build, it causes non-determinism in installation
+
+* Mon Oct 16 2017 Michael Simacek <msimacek@redhat.com> - 4.2.1-1.1.boot
+- Bootstrap build to fix installation
+
+* Mon Oct 16 2017 Michael Simacek <msimacek@redhat.com> - 4.2.1-1
+- Non-bootstrap build
+
+* Wed Sep 20 2017 Michael Simacek <msimacek@redhat.com> - 4.2.1-0.1.boot
+- Update to upstream version 4.2.1
+
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.13-10
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Mon Jul 10 2017 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.13-9
+- Port to XMvn 3.0.0
+- Port to Checkstyle 8.0
+
+* Thu Apr 20 2017 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.13-8
+- Rebuild for Maven 3.5.0
+
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.13-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
+* Mon Nov 28 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.13-6
+- Fix bootstrap build after aqute-bnd update
+
+* Mon May 30 2016 Michael Simacek <msimacek@redhat.com> - 2.13-5
+- Also add bndlib.annotations to dependencies
+
+* Mon May 30 2016 Michael Simacek <msimacek@redhat.com> - 2.13-4
+- Add transitive dep on aqute-libg
+
+* Wed May 25 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.13-3
+- Enable S3 plugin
+
+* Mon May 02 2016 Michael Simacek <msimacek@redhat.com> - 2.13-2
+- Add manpage (Resolves rhbz#1262238)
+
+* Tue Apr 26 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.13-1
+- Update to upstream version 2.13
+
+* Tue Apr 19 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.13-0.2.rc1
+- Fix test worker classpath
+
+* Mon Apr 11 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.13-0.1.rc1
+- Update to upstream version 2.13-rc-1
+
+* Thu Mar 17 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.12-1
+- Update to upstream version 2.12
+
+* Wed Mar  9 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.12-0.1.rc1
+- Update to upstream version 2.12-rc-1
+
+* Tue Feb 16 2016 Mikolaj Izdebski <mizdebsk@redhat.com> 2.11-1
+- Update to upstream version 2.11
+
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.10-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
+* Tue Jan  5 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.10-1
+- Update to upstream version 2.10
+
+* Wed Dec  2 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.9-2
+- Enable Zinc Scala compiler
+
+* Mon Nov 23 2015 Michael Simacek <msimacek@redhat.com> - 2.9-1
+- Update to upstream version 2.9
+- Fix bootstrap build
+
+* Wed Oct 28 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.8-2
+- Install artifacts using XMvn Gradle plugin
+
+* Tue Oct 20 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.8-1
+- Update to upstream version 2.8
+
+* Fri Oct  9 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.8-0.1.rc1
+- Update to upstream version 2.8-rc-1
+
+* Mon Sep 28 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.7-2
+- Define minimal versions of some dependencies
+- Resolves: rhbz#1266550
+
+* Mon Sep 14 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.7-1
+- Update to upstream version 2.7
+
+* Fri Sep 11 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.7-0.3.rc2
+- Fix daemon startup code not to rely on Class-Path
+- Resolves: rhbz#1261402
+
+* Tue Sep  8 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.7-0.2.rc2
+- Update to upstream version 2.7-rc-2
+
+* Mon Aug 31 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.7-0.1.rc1
+- Update to upstream version 2.7-rc-1
+
+* Thu Aug 13 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.6-1
+- Update to upstream version 2.6
+
+* Mon Jul 13 2015 Michael Simacek <msimacek@redhat.com> - 2.5-3
+- Build against aqute-bndlib-2.4.1
+
+* Fri Jul 10 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.5-2
+- Recommend java-devel instead of requiring it
+
+* Thu Jul  9 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.5-1
+- Update to upstream version 2.5
+
+* Mon Jul  6 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.5-0.2.rc2
+- Update to upstream version 2.5-rc-2
+
+* Tue Jun 30 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.5-0.1.rc1
+- Update to upstream version 2.5-rc-1
+
+* Tue Jun 30 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.4-4
+- Remove dependency on netty31
+
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.4-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Fri Jun 12 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.4-2
+- Port to Kryo 3.0
+
+* Wed May  6 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.4-1
+- Update to upstream version 2.4
+
+* Fri Apr 24 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.4-0.1.rc1
+- Update to upstream version 2.4-rc-1
+
+* Fri Apr 17 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.3-4
+- Port to Polyglot 0.1.8
+
+* Mon Apr 13 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.3-3
+- Port to Ivy 2.4.0
+
+* Wed Mar 25 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.3-2
+- Port to Maven 3.3.1
+
+* Wed Mar 25 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.3-1
+- Update to upstream version 2.3
+
+* Wed Mar 25 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.2.1-9
+- Remove build dependency on cobertura
+
+* Fri Mar 20 2015 Michal Srb <msrb@redhat.com> - 2.2.1-8
+- Non-bootstrap build for Maven 3.3.1
+
+* Fri Mar 20 2015 Michal Srb <msrb@redhat.com> - 2.2.1-7
+- Bootstrap build for Maven 3.3.1
+
 * Fri Feb 13 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.2.1-6
 - Rebuild for netty3 update
 
