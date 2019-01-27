@@ -1,23 +1,23 @@
-From 54175cc9285d68c44abda84b4218814392d16f12 Mon Sep 17 00:00:00 2001
+From d5dc17df18ae38230761b9ce9efbfdd66217ec37 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Mon, 6 Jul 2015 09:57:22 +0200
-Subject: [PATCH 05/16] Port to Maven 3.3.9 and Eclipse Aether
+Subject: [PATCH 05/17] Port to Maven 3.3.9 and Eclipse Aether
 
 ---
- gradle/dependencies.gradle                         | 23 ++++++----
- .../internal/maven/MavenProjectsCreator.java       |  7 ++--
- .../action/AbstractMavenPublishAction.java         | 49 +++++++++++-----------
- .../action/LoggingMavenTransferListener.java       |  6 +--
- .../maven/internal/action/MavenDeployAction.java   | 31 +++++++-------
- .../maven/internal/action/MavenInstallAction.java  | 10 ++---
- .../internal/action/SnapshotVersionManager.java    | 16 +++----
+ gradle/dependencies.gradle                    | 23 ++++++---
+ .../internal/maven/MavenProjectsCreator.java  |  7 +--
+ .../action/AbstractMavenPublishAction.java    | 49 +++++++++----------
+ .../action/LoggingMavenTransferListener.java  |  6 +--
+ .../internal/action/MavenDeployAction.java    | 31 ++++++------
+ .../internal/action/MavenInstallAction.java   | 10 ++--
+ .../action/SnapshotVersionManager.java        | 16 +++---
  7 files changed, 76 insertions(+), 66 deletions(-)
 
 diff --git a/gradle/dependencies.gradle b/gradle/dependencies.gradle
-index 7045cd4c70f..7b7be2a583d 100755
+index 73cf0b1ee08..54dc27d7fbe 100755
 --- a/gradle/dependencies.gradle
 +++ b/gradle/dependencies.gradle
-@@ -115,12 +115,18 @@ libraries += [
+@@ -123,12 +123,18 @@ libraries.nekohtml = dependencies.module("net.sourceforge.nekohtml:nekohtml:1.9.
  libraries.maven3 = dependencies.module("org.apache.maven:maven-core:${versions.maven}") {
      dependency "org.apache.maven:maven-settings:${versions.maven}@jar"
      dependency "org.apache.maven:maven-settings-builder:${versions.maven}@jar"
@@ -30,14 +30,14 @@ index 7045cd4c70f..7b7be2a583d 100755
 +    dependency "javax.inject:javax.inject:1@jar"
  
      //plexus:
-     dependency "org.codehaus.plexus:plexus-utils:2.0.6@jar"
+     dependency "org.codehaus.plexus:plexus-utils:2.1@jar"
      dependency "org.codehaus.plexus:plexus-interpolation:1.14@jar"
      dependency "org.codehaus.plexus:plexus-component-annotations:1.5.5@jar"
 -    dependency "org.codehaus.plexus:plexus-container-default:1.5.5@jar"
      dependency "org.codehaus.plexus:plexus-classworlds:2.4@jar"
  
      //sonatype plexus
-@@ -142,14 +148,17 @@ libraries.maven3 = dependencies.module("org.apache.maven:maven-core:${versions.m
+@@ -150,14 +156,17 @@ libraries.maven3 = dependencies.module("org.apache.maven:maven-core:${versions.m
      dependency 'org.apache.maven.wagon:wagon-file:2.4@jar'
      dependency 'org.apache.maven.wagon:wagon-http:2.4@jar'
      dependency 'org.apache.maven.wagon:wagon-provider-api:2.4@jar'
@@ -327,5 +327,5 @@ index 1fedf1d281a..b1ee8c09a1a 100644
      }
  
 -- 
-2.13.6
+2.17.2
 

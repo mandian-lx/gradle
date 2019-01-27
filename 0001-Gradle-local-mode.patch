@@ -1,7 +1,7 @@
-From 01dbd63a77c9188e1ca02013c79f15c81272e80f Mon Sep 17 00:00:00 2001
+From a20dbae1bff7997e720b767ce7c6c0aca51b3574 Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Wed, 15 Oct 2014 14:23:30 +0200
-Subject: [PATCH 01/16] Gradle local mode
+Subject: [PATCH 01/17] Gradle local mode
 
 ---
  build.gradle                                         | 1 +
@@ -12,10 +12,10 @@ Subject: [PATCH 01/16] Gradle local mode
  5 files changed, 7 insertions(+)
 
 diff --git a/build.gradle b/build.gradle
-index 45faed9098b..b4504db8f7c 100644
+index aea7a65c3b3..7d8ac910b04 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -193,6 +193,7 @@ allprojects {
+@@ -197,6 +197,7 @@ allprojects {
          maven { url 'https://repo.gradle.org/gradle/libs-releases' }
          maven { url 'https://repo.gradle.org/gradle/libs-milestones' }
          maven { url "https://repo.gradle.org/gradle/libs-snapshots" }
@@ -24,10 +24,10 @@ index 45faed9098b..b4504db8f7c 100644
  
      // patchExternalModules lives in the root project - we need to activate normalization there, too.
 diff --git a/buildSrc/build.gradle b/buildSrc/build.gradle
-index b2eb858a3ce..e5b73f35ef5 100644
+index bdf01f600dc..196acdb4b73 100644
 --- a/buildSrc/build.gradle
 +++ b/buildSrc/build.gradle
-@@ -25,6 +25,9 @@ repositories {
+@@ -29,6 +29,9 @@ repositories {
      maven { url 'https://repo.gradle.org/gradle/libs-releases' }
      maven { url "https://repo.gradle.org/gradle/libs-snapshots" }
      maven { url "https://plugins.gradle.org/m2/" }
@@ -38,7 +38,7 @@ index b2eb858a3ce..e5b73f35ef5 100644
  
  dependencies {
 diff --git a/subprojects/docs/docs.gradle b/subprojects/docs/docs.gradle
-index e876b265d16..5063c30e60e 100755
+index 9704e5214bd..e960da3eb1a 100755
 --- a/subprojects/docs/docs.gradle
 +++ b/subprojects/docs/docs.gradle
 @@ -41,6 +41,7 @@ apply plugin: 'javascript-base'
@@ -50,7 +50,7 @@ index e876b265d16..5063c30e60e 100755
  
      ivy {
 diff --git a/subprojects/docs/src/transforms/release-notes.gradle b/subprojects/docs/src/transforms/release-notes.gradle
-index c0c76884944..5aca84da33d 100644
+index a4410e35049..8bfe924c972 100644
 --- a/subprojects/docs/src/transforms/release-notes.gradle
 +++ b/subprojects/docs/src/transforms/release-notes.gradle
 @@ -1,5 +1,6 @@
@@ -73,5 +73,5 @@ index a467c71be4d..92981631cb8 100644
  }
  
 -- 
-2.13.6
+2.17.2
 

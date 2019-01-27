@@ -1,7 +1,7 @@
-From f317f852f814455b3bca89f528662f908d21e618 Mon Sep 17 00:00:00 2001
+From 36ea3935a6ffef95a530b88fd30ddd579d0da39d Mon Sep 17 00:00:00 2001
 From: Michael Simacek <msimacek@redhat.com>
 Date: Fri, 29 Sep 2017 14:10:15 +0300
-Subject: [PATCH 11/16] Disable benchmarks
+Subject: [PATCH 11/17] Disable benchmarks
 
 ---
  gradle/groovyProject.gradle                    | 4 ----
@@ -11,10 +11,10 @@ Subject: [PATCH 11/16] Disable benchmarks
  4 files changed, 24 deletions(-)
 
 diff --git a/gradle/groovyProject.gradle b/gradle/groovyProject.gradle
-index 60810cd91ba..1897b21e608 100644
+index d4479292523..df61e7f1e88 100644
 --- a/gradle/groovyProject.gradle
 +++ b/gradle/groovyProject.gradle
-@@ -102,10 +102,6 @@ if (file("src/performanceTest").exists()) {
+@@ -124,10 +124,6 @@ if (file("src/performanceTest").exists()) {
      apply from: "$rootDir/gradle/performanceTest.gradle"
  }
  
@@ -79,5 +79,5 @@ index dfd4db20408..0b59611dfcd 100755
      destinationDir = file("$buildDir/reports/jmh-html")
  
 -- 
-2.13.6
+2.17.2
 

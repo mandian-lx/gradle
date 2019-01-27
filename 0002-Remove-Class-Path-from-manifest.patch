@@ -1,13 +1,13 @@
-From afdbc19a52edc440ee10a793326dfb57b629107f Mon Sep 17 00:00:00 2001
+From b2a5d7f3bd79639fbd391f3b2ce74a6f1e6023de Mon Sep 17 00:00:00 2001
 From: Mikolaj Izdebski <mizdebsk@redhat.com>
 Date: Sun, 9 Nov 2014 17:52:30 +0100
-Subject: [PATCH 02/16] Remove Class-Path from manifest
+Subject: [PATCH 02/17] Remove Class-Path from manifest
 
 ---
- .../internal/installation/CurrentGradleInstallationLocator.java   | 8 +-------
- .../main/java/org/gradle/api/internal/classpath/ManifestUtil.java | 3 +++
- subprojects/launcher/launcher.gradle                              | 3 +++
- .../org/gradle/launcher/daemon/client/DefaultDaemonStarter.java   | 6 +-----
+ .../installation/CurrentGradleInstallationLocator.java    | 8 +-------
+ .../org/gradle/api/internal/classpath/ManifestUtil.java   | 3 +++
+ subprojects/launcher/launcher.gradle                      | 3 +++
+ .../launcher/daemon/client/DefaultDaemonStarter.java      | 6 +-----
  4 files changed, 8 insertions(+), 12 deletions(-)
 
 diff --git a/subprojects/core-api/src/main/java/org/gradle/internal/installation/CurrentGradleInstallationLocator.java b/subprojects/core-api/src/main/java/org/gradle/internal/installation/CurrentGradleInstallationLocator.java
@@ -81,5 +81,5 @@ index 830aaf34cfe..2c57544bb51 100755
          if (classpath.isEmpty()) {
              throw new IllegalStateException("Unable to construct a bootstrap classpath when starting the daemon");
 -- 
-2.13.6
+2.17.2
 

@@ -9,11 +9,11 @@
 # doesn't provide Maven metadata, and it may have some functionality
 # missing.  For this reason a normal non-bootstrap build should be
 # done immediately after Gradle is bootstrapped.
-%bcond_without bootstrap
+%bcond_with bootstrap
 
 Name:           gradle
-Version:        4.3.1
-Release:        2%{?with_bootstrap:.boot}.1
+Version:        4.4.1
+Release:        1%{?with_bootstrap:.boot}%{?dist}
 Summary:        Build automation tool
 # Some examples and integration tests are under GNU LGPL and Boost
 # Software License, but are not used to create binary package.
@@ -63,6 +63,8 @@ Patch0013:      0013-Add-missing-transitive-dependencies.patch
 Patch0014:      0014-Disable-ideNative-module.patch
 Patch0015:      0015-Disable-docs-build.patch
 Patch0016:      0016-Port-to-guava-20.0.patch
+# it depends on ant which is Java 8+
+Patch0017:      0017-Set-core-api-source-level-to-8.patch
 
 # For autosetup
 BuildRequires:  git
@@ -104,8 +106,8 @@ BuildRequires:  mvn(com.fasterxml.jackson.core:jackson-databind)
 BuildRequires:  mvn(com.google.code.findbugs:findbugs)
 BuildRequires:  mvn(com.google.code.findbugs:jsr305)
 BuildRequires:  mvn(com.google.code.gson:gson)
-BuildRequires:  mvn(com.google.guava:guava)
-BuildRequires:  mvn(com.google.guava:guava-jdk5)
+BuildRequires:  mvn(com.google.guava:guava:20.0)
+BuildRequires:  mvn(com.google.guava:guava-jdk5:20.0)
 BuildRequires:  mvn(com.google.http-client:google-http-client)
 BuildRequires:  mvn(com.google.oauth-client:google-oauth-client)
 BuildRequires:  mvn(com.googlecode.jarjar:jarjar)
@@ -167,9 +169,6 @@ BuildRequires:  mvn(org.codehaus.plexus:plexus-classworlds)
 BuildRequires:  mvn(org.codehaus.plexus:plexus-component-annotations)
 BuildRequires:  mvn(org.codehaus.plexus:plexus-interpolation)
 BuildRequires:  mvn(org.codehaus.plexus:plexus-utils)
-BuildRequires:  mvn(org.codehaus.sonar:sonar-batch)
-BuildRequires:  mvn(org.codehaus.sonar:sonar-batch-bootstrapper)
-BuildRequires:  mvn(org.codehaus.sonar:sonar-plugin-api)
 BuildRequires:  mvn(org.codenarc:CodeNarc)
 BuildRequires:  mvn(org.eclipse.aether:aether-api)
 BuildRequires:  mvn(org.eclipse.aether:aether-connector-basic)
@@ -187,6 +186,7 @@ BuildRequires:  mvn(org.eclipse.jetty:jetty-servlet)
 BuildRequires:  mvn(org.eclipse.jetty:jetty-util)
 BuildRequires:  mvn(org.eclipse.jetty:jetty-webapp)
 BuildRequires:  mvn(org.eclipse.jetty:jetty-xml)
+BuildRequires:  mvn(org.eclipse.jgit:org.eclipse.jgit)
 BuildRequires:  mvn(org.eclipse.sisu:org.eclipse.sisu.inject)
 BuildRequires:  mvn(org.eclipse.sisu:org.eclipse.sisu.plexus)
 BuildRequires:  mvn(org.fusesource.hawtjni:hawtjni-runtime)
@@ -249,12 +249,13 @@ Requires:       base64coder
 Requires:       beust-jcommander
 Requires:       bouncycastle
 Requires:       bouncycastle-pg
+Requires:       bsh
 Requires:       ecj
 Requires:       glassfish-servlet-api
 Requires:       google-gson
 Requires:       google-guice
 Requires:       groovy-lib
-Requires:       guava
+Requires:       guava20
 Requires:       hawtjni-runtime
 Requires:       httpcomponents-client
 Requires:       httpcomponents-core
@@ -269,6 +270,7 @@ Requires:       jcip-annotations
 Requires:       jcl-over-slf4j
 Requires:       jetty-server
 Requires:       jetty-util
+Requires:       jgit
 Requires:       joda-time
 Requires:       jsch
 Requires:       jsr-305
@@ -439,6 +441,28 @@ install -p -m 644 man/gradle.1 %{buildroot}%{_mandir}/man1/gradle.1
 %license LICENSE NOTICE
 
 %changelog
+* Sat Oct 27 2018 Daniel Martinez Oeckel <caravel@fedoraproject.org> - 4.4.1-1
+- Update to upstream version 4.4.1
+
+* Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 4.3.1-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
+* Wed Apr 25 2018 Mikolaj Izdebski <mizdebsk@redhat.com> - 4.3.1-7
+- Rebuild for objectweb-asm update
+
+* Mon Mar 26 2018 Michael Simacek <msimacek@redhat.com> - 4.3.1-6
+- Bump source version to 8 to fix FTBFS
+- Remove unused dependency on sonar
+
+* Fri Feb 16 2018 Michael Simacek <msimacek@redhat.com> - 4.3.1-5.boot
+- Non-bootstrap build
+
+* Fri Feb 16 2018 Michael Simacek <msimacek@redhat.com> - 4.3.1-4
+- Bootstrap build for guava update
+
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 4.3.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
 * Thu Jan 11 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 4.3.1-2
 - Remove obsolete scriptlets
 

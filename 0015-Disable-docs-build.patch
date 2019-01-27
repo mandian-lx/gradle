@@ -1,25 +1,34 @@
-From 1e3a435f1b88a8cd056bb506b3107c60be5509fb Mon Sep 17 00:00:00 2001
+From 794ada1e70d92ac918bef5c0de69ad988e295918 Mon Sep 17 00:00:00 2001
 From: Michael Simacek <msimacek@redhat.com>
 Date: Mon, 2 Oct 2017 23:09:09 +0300
-Subject: [PATCH 15/16] Disable docs build
+Subject: [PATCH 15/17] Disable docs build
 
 ---
- subprojects/docs/docs.gradle | 372 +------------------------------------------
- 1 file changed, 2 insertions(+), 370 deletions(-)
+ subprojects/docs/docs.gradle | 372 +----------------------------------
+ 1 file changed, 6 insertions(+), 366 deletions(-)
 
 diff --git a/subprojects/docs/docs.gradle b/subprojects/docs/docs.gradle
-index 5063c30e60e..c035a2c90ae 100755
+index e960da3eb1a..f59938642c3 100755
 --- a/subprojects/docs/docs.gradle
 +++ b/subprojects/docs/docs.gradle
-@@ -18,7 +18,6 @@ import javax.xml.transform.TransformerFactory
- import javax.xml.transform.stream.StreamResult
- import javax.xml.transform.stream.StreamSource
- 
+@@ -14,12 +14,10 @@
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+-import org.apache.tools.ant.filters.ReplaceTokens
+-import org.gradle.build.docs.AssembleSamplesDocTask
 -import org.gradle.build.docs.CacheableAsciidoctorTask
+-import org.gradle.build.docs.Docbook2Xhtml
+-import org.gradle.build.docs.ExtractSamplesTask
+-import org.gradle.build.docs.ExtractSnippetsTask
++import javax.xml.transform.TransformerFactory
++import javax.xml.transform.stream.StreamResult
++import javax.xml.transform.stream.StreamSource
++
  import org.gradle.build.docs.UserGuideSectionVerifier
  import org.gradle.build.docs.UserGuideTransformTask
- import org.gradle.build.docs.ExtractSnippetsTask
-@@ -38,7 +37,6 @@ apply plugin: 'base'
+ import org.gradle.build.docs.Xhtml2Pdf
+@@ -38,7 +36,6 @@ apply plugin: 'base'
  apply plugin: 'pegdown'
  apply plugin: 'jsoup'
  apply plugin: 'javascript-base'
@@ -27,10 +36,12 @@ index 5063c30e60e..c035a2c90ae 100755
  
  repositories {
      xmvn()
-@@ -65,26 +63,6 @@ configurations {
+@@ -65,28 +62,6 @@ configurations {
  }
  
  dependencies {
+-    asciidoctor 'org.asciidoctor:asciidoctorj:1.5.6'
+-
 -    userGuideTask 'xalan:xalan:2.7.1', libraries.xerces
 -    userGuideTask module('xhtmlrenderer:xhtmlrenderer:R8rc1') {
 -        dependency 'itext:itext:2.0.8@jar'
@@ -54,7 +65,7 @@ index 5063c30e60e..c035a2c90ae 100755
      testCompile "org.pegdown:pegdown:1.1.0"
      testCompile libraries.jsoup
      testCompile "org.gebish:geb-spock:0.9.3"
-@@ -110,185 +88,20 @@ ext {
+@@ -112,174 +87,20 @@ ext {
      samplesSrcDir = file('src/samples')
  }
  
@@ -116,7 +127,8 @@ index 5063c30e60e..c035a2c90ae 100755
 -    snippetsDir = samples.snippetsDir
 -    linksFile = dslDocbook.linksFile
 -    websiteUrl = 'http://www.gradle.org'
--
++ext.outputs = []
+ 
 -    if (name in ["pdfUserguideDocbook"]) {
 -        // These will only be valid for releases, but that's ok
 -        javadocUrl = "http://www.gradle.org/docs/${->version}/javadoc"
@@ -147,8 +159,7 @@ index 5063c30e60e..c035a2c90ae 100755
 -        css.filter ReplaceTokens, tokens: tokens
 -    }
 -}
-+ext.outputs = []
- 
+-
 -task css(type: Sync, dependsOn: configureCss) {
 +task css(type: Sync) {
      into "$buildDir/css"
@@ -162,28 +173,16 @@ index 5063c30e60e..c035a2c90ae 100755
 -}
 -
 -task samples(type: ExtractSnippetsTask) {
--    source samplesSrcDir
--    exclude 'userguideOutput/**'
--    exclude '**/readme.xml'
--    exclude '**/build/**'
--    exclude '**/.gradle/**'
--
--    // Resources that should not be filtered
--    exclude 'userguide/tutorial/antLoadfileResources/**'
--    exclude 'native-binaries/cunit/libs/**'
--    exclude 'native-binaries/google-test/libs/**'
--
+-    samples = samplesSrcDir
 -    destDir = samplesDir
+-    excludes = ['userguideOutput/**',
+-                '**/readme.xml',
+-                '**/build/**',
+-                '**/.gradle/**']
+-    nonFiltered = [ 'userguide/tutorial/antLoadfileResources/**',
+-                    'native-binaries/cunit/libs/**',
+-                    'native-binaries/google-test/libs/**' ]
 -    snippetsDir = new File(buildDir, 'snippets')
--    doLast {
--        copy {
--            from samplesSrcDir
--            into samplesDir
--            include 'userguide/tutorial/antLoadfileResources/**'
--            include 'native-binaries/cunit/libs/**'
--            include 'native-binaries/google-test/libs/**'
--        }
--    }
 -}
 -
 -task userguideStyleSheets(type: Copy) {
@@ -205,6 +204,7 @@ index 5063c30e60e..c035a2c90ae 100755
 -    sourceDir = userguideSrcDir
 -    sources { include '*.adoc' }
 -    outputDir = asciidocOutputDir
+-    inputs.file { defaultImports.importsDestFile } withPropertyName 'defaultImports' withPathSensitivity PathSensitivity.NONE
 -
 -    // we pull the default-imports from here:
 -    resources {
@@ -242,7 +242,7 @@ index 5063c30e60e..c035a2c90ae 100755
  task defaultImports(type: GenerateDefaultImportsTask, dependsOn: dslMetaData) {
      metaDataFile = dslMetaData.destFile
      importsDestFile = new File(generatedResourcesDir, "default-imports.txt")
-@@ -309,107 +122,6 @@ task defaultImports(type: GenerateDefaultImportsTask, dependsOn: dslMetaData) {
+@@ -300,107 +121,6 @@ task defaultImports(type: GenerateDefaultImportsTask, dependsOn: dslMetaData) {
      excludePackage 'org.gradle.platform.base.test'
  }
  
@@ -271,7 +271,7 @@ index 5063c30e60e..c035a2c90ae 100755
 -    )
 -}
 -
--[configureCss, samples, samplesDocbook, defaultImports]*.mustRunAfter(checkSectionIds)
+-[configureCss, samples, samplesDocbook]*.mustRunAfter(checkSectionIds)
 -
 -task extractSamples(type: ExtractSamplesTask) {
 -    // We need default imports since it is included by userguide.xml
@@ -350,7 +350,7 @@ index 5063c30e60e..c035a2c90ae 100755
  def javaApiUrl = "https://docs.oracle.com/javase/7/docs/api"
  def groovyApiUrl = "http://docs.groovy-lang.org/docs/groovy-${versions.groovy}/html/gapi"
  def mavenApiUrl = "http://maven.apache.org/ref/${versions.maven}/maven-model/apidocs"
-@@ -440,84 +152,4 @@ task javadocAll(type: Javadoc) {
+@@ -431,84 +151,4 @@ task javadocAll(type: Javadoc) {
      ext.entryPoint = "$destinationDir/index.html"
  }
  
@@ -436,5 +436,5 @@ index 5063c30e60e..c035a2c90ae 100755
 -    from project.outputs.docs
 -}
 -- 
-2.13.6
+2.17.2
 

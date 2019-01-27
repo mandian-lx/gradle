@@ -43,7 +43,7 @@ google-gson/gson
 google-http-java-client
 google-oauth-java-client
 groovy/groovy-all
-guava
+guava20
 jsr-305
 guice/google-guice-no_aop
 hawtjni/hawtjni-runtime
@@ -68,6 +68,7 @@ jetty/jetty-servlet
 jetty/jetty-util
 jetty/jetty-webapp
 jetty/jetty-xml
+jgit
 jline/jline
 jna
 joda-time
@@ -127,9 +128,6 @@ slf4j/jcl-over-slf4j
 slf4j/jul-to-slf4j
 slf4j/log4j-over-slf4j
 slf4j/slf4j-api
-sonar/sonar-batch
-sonar/sonar-batch-bootstrapper
-sonar/sonar-plugin-api
 tesla-polyglot/polyglot-common
 tesla-polyglot/polyglot-groovy
 testng
@@ -195,7 +193,7 @@ for mod in $(cat "$1"); do
     # resources, but no compilable sources)
     if [[ -n "$srcdirs" ]]; then
 	echo "== groovyc $mod..."
-	groovyc -cp $classpath -j -J source=1.5 -J target=1.6 -d $classes_dir $(find $srcdirs -name *.java -o -name *.groovy)
+	groovyc -cp $classpath -j -J source=8 -J target=8 -d $classes_dir $(find $srcdirs -name *.java -o -name *.groovy)
     fi
 
     # Create JAR with classes, but not yet resources

@@ -98,6 +98,7 @@ import org.gradle.language.assembler.plugins.*
 import org.gradle.language.assembler.tasks.*
 import org.gradle.language.base.*
 import org.gradle.language.base.artifact.*
+import org.gradle.language.base.compile.*
 import org.gradle.language.base.plugins.*
 import org.gradle.language.base.sources.*
 import org.gradle.language.c.*
@@ -142,6 +143,8 @@ import org.gradle.nativeplatform.platform.*
 import org.gradle.nativeplatform.plugins.*
 import org.gradle.nativeplatform.tasks.*
 import org.gradle.nativeplatform.test.*
+import org.gradle.nativeplatform.test.cpp.*
+import org.gradle.nativeplatform.test.cpp.plugins.*
 import org.gradle.nativeplatform.test.cunit.*
 import org.gradle.nativeplatform.test.cunit.plugins.*
 import org.gradle.nativeplatform.test.cunit.tasks.*
@@ -170,7 +173,6 @@ import org.gradle.plugin.devel.*
 import org.gradle.plugin.devel.plugins.*
 import org.gradle.plugin.devel.tasks.*
 import org.gradle.plugin.management.*
-import org.gradle.plugin.repository.*
 import org.gradle.plugin.use.*
 import org.gradle.plugins.ear.*
 import org.gradle.plugins.ear.descriptor.*
@@ -197,4 +199,6 @@ import org.gradle.testing.jacoco.plugins.*
 import org.gradle.testing.jacoco.tasks.*
 import org.gradle.testing.jacoco.tasks.rules.*
 import org.gradle.testkit.runner.*
+import org.gradle.vcs.*
+import org.gradle.vcs.git.*
 import org.gradle.workers.*

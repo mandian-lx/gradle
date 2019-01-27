@@ -1,25 +1,26 @@
-From c88511085fa12c7734ec71ee3a1ab0ffce88cf7d Mon Sep 17 00:00:00 2001
+From 24a404aaa3955528385398f15a32440f68670e89 Mon Sep 17 00:00:00 2001
 From: Michael Simacek <msimacek@redhat.com>
 Date: Sun, 12 Nov 2017 19:08:40 +0200
-Subject: [PATCH 16/16] Port to guava 20.0
+Subject: [PATCH 16/17] Port to guava 20.0
 
 ---
- gradle/dependencies.gradle                                           | 2 +-
- .../main/java/org/gradle/api/internal/CompositeDomainObjectSet.java  | 5 +++--
- .../java/org/gradle/api/internal/DefaultDomainObjectCollection.java  | 3 ++-
- .../changedetection/rules/PreviousSuccessTaskStateChanges.java       | 3 ++-
- .../changedetection/state/DefaultFileCollectionSnapshot.java         | 3 ++-
- .../state/OrderInsensitiveTaskFilePropertyCompareStrategy.java       | 3 +--
- .../changedetection/state/TaskFilePropertyCompareStrategy.java       | 2 +-
- .../gradle/api/internal/tasks/CompositeTaskOutputPropertySpec.java   | 4 ++--
- .../main/java/org/gradle/api/internal/tasks/DefaultTaskOutputs.java  | 3 ++-
- 9 files changed, 16 insertions(+), 12 deletions(-)
+ gradle/dependencies.gradle                                   | 2 +-
+ .../org/gradle/api/internal/CompositeDomainObjectSet.java    | 5 +++--
+ .../gradle/api/internal/DefaultDomainObjectCollection.java   | 3 ++-
+ .../rules/PreviousSuccessTaskStateChanges.java               | 3 ++-
+ .../changedetection/state/DefaultFileCollectionSnapshot.java | 3 ++-
+ .../OrderInsensitiveTaskFilePropertyCompareStrategy.java     | 3 +--
+ .../state/TaskFilePropertyCompareStrategy.java               | 2 +-
+ .../api/internal/tasks/CompositeTaskOutputPropertySpec.java  | 4 ++--
+ .../org/gradle/api/internal/tasks/DefaultTaskOutputs.java    | 3 ++-
+ .../plugin/management/internal/DefaultPluginRequests.java    | 3 ++-
+ 10 files changed, 18 insertions(+), 13 deletions(-)
 
 diff --git a/gradle/dependencies.gradle b/gradle/dependencies.gradle
-index 262bcff571d..f51cefd58b0 100755
+index bbf10217798..a6148dfa088 100755
 --- a/gradle/dependencies.gradle
 +++ b/gradle/dependencies.gradle
-@@ -92,7 +92,7 @@ libraries.commons_httpclient = dependencies.module('org.apache.httpcomponents:ht
+@@ -94,7 +94,7 @@ libraries.commons_httpclient = dependencies.module('org.apache.httpcomponents:ht
  libraries += [
      jatl: 'com.googlecode.jatl:jatl:0.2.2',
      dom4j: 'dom4j:dom4j:1.6.1@jar',
@@ -205,6 +206,27 @@ index 8920be58787..fb9cfa9a363 100644
                              }
                          }
                          return Iterators.singletonIterator((TaskOutputFilePropertySpec) propertySpec);
+diff --git a/subprojects/core/src/main/java/org/gradle/plugin/management/internal/DefaultPluginRequests.java b/subprojects/core/src/main/java/org/gradle/plugin/management/internal/DefaultPluginRequests.java
+index 6e7cf364a0a..c43282a1e72 100644
+--- a/subprojects/core/src/main/java/org/gradle/plugin/management/internal/DefaultPluginRequests.java
++++ b/subprojects/core/src/main/java/org/gradle/plugin/management/internal/DefaultPluginRequests.java
+@@ -18,6 +18,7 @@ package org.gradle.plugin.management.internal;
+ 
+ import com.google.common.collect.Iterators;
+ 
++import java.util.Collections;
+ import java.util.Iterator;
+ import java.util.List;
+ 
+@@ -60,7 +61,7 @@ public class DefaultPluginRequests implements PluginRequests {
+ 
+         @Override
+         public Iterator<PluginRequestInternal> iterator() {
+-            return Iterators.emptyIterator();
++            return Collections.emptyIterator();
+         }
+     }
+ }
 -- 
-2.13.6
+2.17.2
 

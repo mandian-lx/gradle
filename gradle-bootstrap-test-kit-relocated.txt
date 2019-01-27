@@ -28,6 +28,7 @@ org/apache/tools/bzip2
 org/apache/tools/mail
 org/apache/tools/tar
 org/apache/tools/zip
+org/apache/xmlcommons
 org/fusesource/hawtjni/runtime
 org/fusesource/jansi
 org/objectweb/asm

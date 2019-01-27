@@ -1,11 +1,11 @@
-From da23a5a32aba4fd56b3c2b749aebc36e4646fcd5 Mon Sep 17 00:00:00 2001
+From df35f5573411746ea2a3d01bfa3f2bcbb01648c3 Mon Sep 17 00:00:00 2001
 From: Michael Simacek <msimacek@redhat.com>
 Date: Sat, 7 Feb 2015 15:28:03 +0100
-Subject: [PATCH 04/16] Use unversioned dependency JAR names
+Subject: [PATCH 04/17] Use unversioned dependency JAR names
 
 ---
- .../java/org/gradle/api/internal/classpath/DefaultModuleRegistry.java   | 2 +-
- .../src/main/java/org/gradle/api/internal/plugins/GroovyJarFile.java    | 2 +-
+ .../gradle/api/internal/classpath/DefaultModuleRegistry.java    | 2 +-
+ .../java/org/gradle/api/internal/plugins/GroovyJarFile.java     | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/subprojects/core/src/main/java/org/gradle/api/internal/classpath/DefaultModuleRegistry.java b/subprojects/core/src/main/java/org/gradle/api/internal/classpath/DefaultModuleRegistry.java
@@ -35,5 +35,5 @@ index 5b7329999ae..c4c778e65a6 100644
      private final File file;
      private final Matcher matcher;
 -- 
-2.13.6
+2.17.2
 

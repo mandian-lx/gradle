@@ -1,17 +1,17 @@
-From b464ad5d282a9222766f9cf50e61a0c5f4632a9b Mon Sep 17 00:00:00 2001
+From 930ef37f4fe3be61982d5ead5a8620cb65335108 Mon Sep 17 00:00:00 2001
 From: Michael Simacek <msimacek@redhat.com>
 Date: Mon, 2 Oct 2017 17:33:05 +0300
-Subject: [PATCH 13/16] Add missing transitive dependencies
+Subject: [PATCH 13/17] Add missing transitive dependencies
 
 ---
- gradle/dependencies.gradle | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ gradle/dependencies.gradle | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
 diff --git a/gradle/dependencies.gradle b/gradle/dependencies.gradle
-index 6e17a88bc31..262bcff571d 100755
+index 96ff6f58fee..bbf10217798 100755
 --- a/gradle/dependencies.gradle
 +++ b/gradle/dependencies.gradle
-@@ -35,7 +35,10 @@ libraries.ant = dependencies.module('org.apache.ant:ant:1.9.6') {
+@@ -37,7 +37,10 @@ libraries.ant = dependencies.module("org.apache.ant:ant:${versions.ant}") {
  
  libraries.asm =  'org.ow2.asm:asm-debug-all:6.0_ALPHA'
  libraries.cglib = 'cglib:cglib:3.2.5'
@@ -23,18 +23,20 @@ index 6e17a88bc31..262bcff571d 100755
  libraries.commons_cli = 'commons-cli:commons-cli:1.2@jar'
  libraries.commons_io = dependencies.module(versions.commons_io)
  libraries.commons_lang = 'commons-lang:commons-lang:2.6@jar'
-@@ -101,7 +104,9 @@ libraries += [
-     nekohtml: 'net.sourceforge.nekohtml:nekohtml:1.9.14',
+@@ -102,8 +105,10 @@ libraries += [
+     equalsVerifier: 'nl.jqno.equalsverifier:equalsverifier:2.1.6',
      xbean: 'org.apache.xbean:xbean-reflect:3.4@jar', //required by maven3 classes
      nativePlatform: 'net.rubygrapefruit:native-platform:0.14',
 -    jansi: dependencies.module('org.fusesource.jansi:jansi:1.14'),
+-    xerces: "xerces:xercesImpl:2.11.0",
 +    jansi: dependencies.module('org.fusesource.jansi:jansi:1.14') {
 +        dependency "org.fusesource.jansi:jansi-native:1.14"
 +    },
-     xerces: "xerces:xercesImpl:2.9.1",
++    xerces: "xerces:xercesImpl:2.9.1",
      objenesis: 'org.objenesis:objenesis:1.2@jar',
-     jsoup:'org.jsoup:jsoup:1.6.3',
-@@ -211,7 +216,11 @@ libraries.awsS3 = [
+     jsoup: 'org.jsoup:jsoup:1.6.3',
+     xmlApis: 'xml-apis:xml-apis:1.4.01',
+@@ -219,7 +224,11 @@ libraries.awsS3 = [
  ] + libraries.commons_httpclient + libraries.joda
  
  // keep in sync with ScalaLanguagePlugin code
@@ -48,5 +50,5 @@ index 6e17a88bc31..262bcff571d 100755
  libraries.gcs = [
          dependencies.create('com.google.apis:google-api-services-storage:v1-rev78-1.22.0') {
 -- 
-2.13.6
+2.17.2
 
