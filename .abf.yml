@@ -1,20 +1,20 @@
-sources:
-  all-released-versions.json: c6574caba25553b6fae5a51555e9522a2b02d018
+remove_sources:
   gradle-4.3.1-src.zip: 287cdc78e90c58859f1bd74e1db1d2a2d087321c
-  gradle-bootstrap-gererate-resources.py: 15048acdeb4577e6304649eac940b71c03c6404c
+sources:
+  all-released-versions.json: 30b1a8d96f8f8c5e1dcf74814a595133c52d9c65  
+  gradle-bootstrap-api-mapping.txt: b65f1aa9302dad1ad1fd83ca81f45f26a05c8435 
+  gradle-bootstrap-api-relocated.txt: 6c9c966a6f14e0bbae3fdf871b71e7e2d1f4e53c
+  gradle-bootstrap-default-imports.txt: d0dc380a76d42ffb3a520085d05ce8983248f0ef
+  gradle-bootstrap-generate-resources.py: 19c2a9a151bb9a34675547110ce5e2a1e31f92ee
+  gradle-bootstrap-implementation-plugin.properties: 48da264ceb561f3596a6d40f5f4516900539d3dd
+  gradle-bootstrap-module-dependencies: 63eeb91249a127ee6eb2d33c197b976ec5ad1e46
+  gradle-bootstrap-module-list: 313fb3feb7cd96d60c033214acdb7e26652f40ab
+  gradle-bootstrap-plugin.properties: 789f5f2eb0ee446bac53f48544f4ae7af685665e
+  gradle-bootstrap.sh: bc606ea3422d32b10e5c4796cacc5a20fc573aa7
+  gradle-bootstrap-test-kit-relocated.txt: e672bcff5836ffeea9e83f39f17942b5cfb2fd0e
+  gradle.desktop: ca1cbc539ce250f08bc32a445c3c7848c8a6329d
   gradle-font-metadata.xml: 54c90a900c174d0c8fec306a7b2417c9c75c6397
   gradle-jquery-metadata.xml: f0f927903c16802d567cf976c7af94ba2bccdd73
   gradle-launcher.sh: c21395e2663cee92d93bb05c23fc1121444da8e3
-  gradle.desktop: ca1cbc539ce250f08bc32a445c3c7848c8a6329d
   gradle-man.txt: 510dc50fe56d4ec4904254e96bac47854bba004f
-  gradle-bootstrap.sh: f463b8fa1f542e4ac36ca16e801b9d59163c4c11
-  gradle-bootstrap-generate-resources.py: 19c2a9a151bb9a34675547110ce5e2a1e31f92ee
-  gradle-bootstrap-module-list: ab5c09b8decf7aeb4c44edc02956d4c3e7c2f26b
-  gradle-bootstrap-module-dependencies: 2a9d322b135deb47309b9c512362ed5515011c10
-  gradle-bootstrap-api-mapping.txt: c880598bfc2fadb57eb66cddfaa61073ec2bf69b
-  gradle-bootstrap-default-imports.txt: 2e2eba6fcd8f32ca4f995f7b1011345c42874c03
-  gradle-bootstrap-plugin.properties: 789f5f2eb0ee446bac53f48544f4ae7af685665e
-  gradle-bootstrap-implementation-plugin.properties: 48da264ceb561f3596a6d40f5f4516900539d3dd
-  gradle-bootstrap-api-relocated.txt: e817e89a60bc5e7f5368b89a00175c9d1129a0da
-  gradle-bootstrap-test-kit-relocated.txt: c7be0c6710fe5e1b043ee8d5d8bc5490a5daecc2
-
+  gradle-4.3.1-src.zip: 287cdc78e90c58859f1bd74e1db1d2a2d087321c
