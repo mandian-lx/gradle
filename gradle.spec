@@ -1,3 +1,4 @@
+%{?_javapackages_macros:%_javapackages_macros}
 # Gradle depends on itself for building.  This can be problematic, for
 # example when some library it uses changes API, Gradle may stop
 # working and it may be impossible to rebuild it in normal way.
@@ -13,7 +14,7 @@
 
 Name:           gradle
 Version:        4.4.1
-Release:        1%{?with_bootstrap:.boot}%{?dist}
+Release:        1%{?with_bootstrap:.boot}
 Summary:        Build automation tool
 # Some examples and integration tests are under GNU LGPL and Boost
 # Software License, but are not used to create binary package.
@@ -65,6 +66,8 @@ Patch0015:      0015-Disable-docs-build.patch
 Patch0016:      0016-Port-to-guava-20.0.patch
 # it depends on ant which is Java 8+
 Patch0017:      0017-Set-core-api-source-level-to-8.patch
+
+BuildRequires:  javapackages-local
 
 # For autosetup
 BuildRequires:  git
